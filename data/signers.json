@@ -1,0 +1,1798 @@
+{
+  "lastUpdated": "2026-03-20T00:34:30.500Z",
+  "totalSignatures": 199,
+  "needed": 218,
+  "signers": [
+    {
+      "name": "Ayanna Pressley",
+      "state": "Massachusetts",
+      "stateAbbr": "MA",
+      "district": "07",
+      "stateDistrict": "MA07",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Yassamin Ansari",
+      "state": "Arizona",
+      "stateAbbr": "AZ",
+      "district": "03",
+      "stateDistrict": "AZ03",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Seth Moulton",
+      "state": "Massachusetts",
+      "stateAbbr": "MA",
+      "district": "06",
+      "stateDistrict": "MA06",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Janice D. Schakowsky",
+      "state": "Illinois",
+      "stateAbbr": "IL",
+      "district": "09",
+      "stateDistrict": "IL09",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Lori Trahan",
+      "state": "Massachusetts",
+      "stateAbbr": "MA",
+      "district": "03",
+      "stateDistrict": "MA03",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Sylvia R. Garcia",
+      "state": "Texas",
+      "stateAbbr": "TX",
+      "district": "29",
+      "stateDistrict": "TX29",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Mark Pocan",
+      "state": "Wisconsin",
+      "stateAbbr": "WI",
+      "district": "02",
+      "stateDistrict": "WI02",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Mark DeSaulnier",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "10",
+      "stateDistrict": "CA10",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Al Green",
+      "state": "Texas",
+      "stateAbbr": "TX",
+      "district": "09",
+      "stateDistrict": "TX09",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Alexandria Ocasio-Cortez",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "14",
+      "stateDistrict": "NY14",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Rashida Tlaib",
+      "state": "Michigan",
+      "stateAbbr": "MI",
+      "district": "12",
+      "stateDistrict": "MI12",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Kweisi Mfume",
+      "state": "Maryland",
+      "stateAbbr": "MD",
+      "district": "07",
+      "stateDistrict": "MD07",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Henry C. \"Hank\" Johnson Jr.",
+      "state": "Georgia",
+      "stateAbbr": "GA",
+      "district": "04",
+      "stateDistrict": "GA04",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "J. Luis Correa",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "46",
+      "stateDistrict": "CA46",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Alma S. Adams",
+      "state": "North Carolina",
+      "stateAbbr": "NC",
+      "district": "12",
+      "stateDistrict": "NC12",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "James P. McGovern",
+      "state": "Massachusetts",
+      "stateAbbr": "MA",
+      "district": "02",
+      "stateDistrict": "MA02",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Lateefah Simon",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "12",
+      "stateDistrict": "CA12",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Sara Jacobs",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "51",
+      "stateDistrict": "CA51",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Sarah McBride",
+      "state": "Delaware",
+      "stateAbbr": "DE",
+      "district": "00",
+      "stateDistrict": "DE00",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Summer L. Lee",
+      "state": "Pennsylvania",
+      "stateAbbr": "PA",
+      "district": "12",
+      "stateDistrict": "PA12",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Delia C. Ramirez",
+      "state": "Illinois",
+      "stateAbbr": "IL",
+      "district": "03",
+      "stateDistrict": "IL03",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Melanie A. Stansbury",
+      "state": "New Mexico",
+      "stateAbbr": "NM",
+      "district": "01",
+      "stateDistrict": "NM01",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Ted Lieu",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "36",
+      "stateDistrict": "CA36",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Valerie P. Foushee",
+      "state": "North Carolina",
+      "stateAbbr": "NC",
+      "district": "04",
+      "stateDistrict": "NC04",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Laura Gillen",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "04",
+      "stateDistrict": "NY04",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Gregory W. Meeks",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "05",
+      "stateDistrict": "NY05",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Maxwell Frost",
+      "state": "Florida",
+      "stateAbbr": "FL",
+      "district": "10",
+      "stateDistrict": "FL10",
+      "party": "Democratic",
+      "dateSigned": "January 22nd, 2026"
+    },
+    {
+      "name": "Teresa Leger Fernandez",
+      "state": "New Mexico",
+      "stateAbbr": "NM",
+      "district": "03",
+      "stateDistrict": "NM03",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Yvette D. Clarke",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "09",
+      "stateDistrict": "NY09",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Sheila Cherfilus-McCormick",
+      "state": "Florida",
+      "stateAbbr": "FL",
+      "district": "20",
+      "stateDistrict": "FL20",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Mary Gay Scanlon",
+      "state": "Pennsylvania",
+      "stateAbbr": "PA",
+      "district": "05",
+      "stateDistrict": "PA05",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Becca Balint",
+      "state": "Vermont",
+      "stateAbbr": "VT",
+      "district": "00",
+      "stateDistrict": "VT00",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Jill N. Tokuda",
+      "state": "Hawaii",
+      "stateAbbr": "HI",
+      "district": "02",
+      "stateDistrict": "HI02",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Jahana Hayes",
+      "state": "Connecticut",
+      "stateAbbr": "CT",
+      "district": "05",
+      "stateDistrict": "CT05",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Lois Frankel",
+      "state": "Florida",
+      "stateAbbr": "FL",
+      "district": "22",
+      "stateDistrict": "FL22",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Shontel M. Brown",
+      "state": "Ohio",
+      "stateAbbr": "OH",
+      "district": "11",
+      "stateDistrict": "OH11",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Jennifer L. McClellan",
+      "state": "Virginia",
+      "stateAbbr": "VA",
+      "district": "04",
+      "stateDistrict": "VA04",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Nikema Williams",
+      "state": "Georgia",
+      "stateAbbr": "GA",
+      "district": "05",
+      "stateDistrict": "GA05",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "LaMonica McIver",
+      "state": "New Jersey",
+      "stateAbbr": "NJ",
+      "district": "10",
+      "stateDistrict": "NJ10",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Nellie Pou",
+      "state": "New Jersey",
+      "stateAbbr": "NJ",
+      "district": "09",
+      "stateDistrict": "NJ09",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "George Latimer",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "16",
+      "stateDistrict": "NY16",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Emilia Strong Sykes",
+      "state": "Ohio",
+      "stateAbbr": "OH",
+      "district": "13",
+      "stateDistrict": "OH13",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Steven Horsford",
+      "state": "Nevada",
+      "stateAbbr": "NV",
+      "district": "04",
+      "stateDistrict": "NV04",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Emily Randall",
+      "state": "Washington",
+      "stateAbbr": "WA",
+      "district": "06",
+      "stateDistrict": "WA06",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Katherine M. Clark",
+      "state": "Massachusetts",
+      "stateAbbr": "MA",
+      "district": "05",
+      "stateDistrict": "MA05",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Deborah K. Ross",
+      "state": "North Carolina",
+      "stateAbbr": "NC",
+      "district": "02",
+      "stateDistrict": "NC02",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Debbie Wasserman Schultz",
+      "state": "Florida",
+      "stateAbbr": "FL",
+      "district": "25",
+      "stateDistrict": "FL25",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Donald S. Beyer Jr.",
+      "state": "Virginia",
+      "stateAbbr": "VA",
+      "district": "08",
+      "stateDistrict": "VA08",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Veronica Escobar",
+      "state": "Texas",
+      "stateAbbr": "TX",
+      "district": "16",
+      "stateDistrict": "TX16",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Suhas Subramanyam",
+      "state": "Virginia",
+      "stateAbbr": "VA",
+      "district": "10",
+      "stateDistrict": "VA10",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Paul Tonko",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "20",
+      "stateDistrict": "NY20",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Lauren Underwood",
+      "state": "Illinois",
+      "stateAbbr": "IL",
+      "district": "14",
+      "stateDistrict": "IL14",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Gabe Amo",
+      "state": "Rhode Island",
+      "stateAbbr": "RI",
+      "district": "01",
+      "stateDistrict": "RI01",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Shri Thanedar",
+      "state": "Michigan",
+      "stateAbbr": "MI",
+      "district": "13",
+      "stateDistrict": "MI13",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Kathy Castor",
+      "state": "Florida",
+      "stateAbbr": "FL",
+      "district": "14",
+      "stateDistrict": "FL14",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Lucy McBath",
+      "state": "Georgia",
+      "stateAbbr": "GA",
+      "district": "06",
+      "stateDistrict": "GA06",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Suzanne Bonamici",
+      "state": "Oregon",
+      "stateAbbr": "OR",
+      "district": "01",
+      "stateDistrict": "OR01",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Gwen Moore",
+      "state": "Wisconsin",
+      "stateAbbr": "WI",
+      "district": "04",
+      "stateDistrict": "WI04",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Stephen F. Lynch",
+      "state": "Massachusetts",
+      "stateAbbr": "MA",
+      "district": "08",
+      "stateDistrict": "MA08",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Lizzie Fletcher",
+      "state": "Texas",
+      "stateAbbr": "TX",
+      "district": "07",
+      "stateDistrict": "TX07",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Danny K. Davis",
+      "state": "Illinois",
+      "stateAbbr": "IL",
+      "district": "07",
+      "stateDistrict": "IL07",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Shomari Figures",
+      "state": "Alabama",
+      "stateAbbr": "AL",
+      "district": "02",
+      "stateDistrict": "AL02",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Bonnie Watson Coleman",
+      "state": "New Jersey",
+      "stateAbbr": "NJ",
+      "district": "12",
+      "stateDistrict": "NJ12",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "André Carson",
+      "state": "Indiana",
+      "stateAbbr": "IN",
+      "district": "07",
+      "stateDistrict": "IN07",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Dwight Evans",
+      "state": "Pennsylvania",
+      "stateAbbr": "PA",
+      "district": "03",
+      "stateDistrict": "PA03",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Maria Elvira Salazar",
+      "state": "Florida",
+      "stateAbbr": "FL",
+      "district": "27",
+      "stateDistrict": "FL27",
+      "party": "Republican",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Robert Menendez",
+      "state": "New Jersey",
+      "stateAbbr": "NJ",
+      "district": "08",
+      "stateDistrict": "NJ08",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Timothy M. Kennedy",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "26",
+      "stateDistrict": "NY26",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Kelly Morrison",
+      "state": "Minnesota",
+      "stateAbbr": "MN",
+      "district": "03",
+      "stateDistrict": "MN03",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Troy A. Carter",
+      "state": "Louisiana",
+      "stateAbbr": "LA",
+      "district": "02",
+      "stateDistrict": "LA02",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "William R. Keating",
+      "state": "Massachusetts",
+      "stateAbbr": "MA",
+      "district": "09",
+      "stateDistrict": "MA09",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Marcy Kaptur",
+      "state": "Ohio",
+      "stateAbbr": "OH",
+      "district": "09",
+      "stateDistrict": "OH09",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Frederica S. Wilson",
+      "state": "Florida",
+      "stateAbbr": "FL",
+      "district": "24",
+      "stateDistrict": "FL24",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Luz M. Rivas",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "29",
+      "stateDistrict": "CA29",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Morgan McGarvey",
+      "state": "Kentucky",
+      "stateAbbr": "KY",
+      "district": "03",
+      "stateDistrict": "KY03",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Jamie Raskin",
+      "state": "Maryland",
+      "stateAbbr": "MD",
+      "district": "08",
+      "stateDistrict": "MD08",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Rosa L. DeLauro",
+      "state": "Connecticut",
+      "stateAbbr": "CT",
+      "district": "03",
+      "stateDistrict": "CT03",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Bennie G. Thompson",
+      "state": "Mississippi",
+      "stateAbbr": "MS",
+      "district": "02",
+      "stateDistrict": "MS02",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Jake Auchincloss",
+      "state": "Massachusetts",
+      "stateAbbr": "MA",
+      "district": "04",
+      "stateDistrict": "MA04",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Glenn Ivey",
+      "state": "Maryland",
+      "stateAbbr": "MD",
+      "district": "04",
+      "stateDistrict": "MD04",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Terri A. Sewell",
+      "state": "Alabama",
+      "stateAbbr": "AL",
+      "district": "07",
+      "stateDistrict": "AL07",
+      "party": "Democratic",
+      "dateSigned": "February 2nd, 2026"
+    },
+    {
+      "name": "Nancy Pelosi",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "11",
+      "stateDistrict": "CA11",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Greg Landsman",
+      "state": "Ohio",
+      "stateAbbr": "OH",
+      "district": "01",
+      "stateDistrict": "OH01",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Suzan K. DelBene",
+      "state": "Washington",
+      "stateAbbr": "WA",
+      "district": "01",
+      "stateDistrict": "WA01",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Jimmy Gomez",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "34",
+      "stateDistrict": "CA34",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Thomas R. Suozzi",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "03",
+      "stateDistrict": "NY03",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Angie Craig",
+      "state": "Minnesota",
+      "stateAbbr": "MN",
+      "district": "02",
+      "stateDistrict": "MN02",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Seth Magaziner",
+      "state": "Rhode Island",
+      "stateAbbr": "RI",
+      "district": "02",
+      "stateDistrict": "RI02",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Brittany Pettersen",
+      "state": "Colorado",
+      "stateAbbr": "CO",
+      "district": "07",
+      "stateDistrict": "CO07",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Richard E. Neal",
+      "state": "Massachusetts",
+      "stateAbbr": "MA",
+      "district": "01",
+      "stateDistrict": "MA01",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Gilbert Ray Cisneros Jr.",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "31",
+      "stateDistrict": "CA31",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Sarah Elfreth",
+      "state": "Maryland",
+      "stateAbbr": "MD",
+      "district": "03",
+      "stateDistrict": "MD03",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Sanford D. Bishop Jr.",
+      "state": "Georgia",
+      "stateAbbr": "GA",
+      "district": "02",
+      "stateDistrict": "GA02",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Chrissy Houlahan",
+      "state": "Pennsylvania",
+      "stateAbbr": "PA",
+      "district": "06",
+      "stateDistrict": "PA06",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Hillary J. Scholten",
+      "state": "Michigan",
+      "stateAbbr": "MI",
+      "district": "03",
+      "stateDistrict": "MI03",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Sam T. Liccardo",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "16",
+      "stateDistrict": "CA16",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Pramila Jayapal",
+      "state": "Washington",
+      "stateAbbr": "WA",
+      "district": "07",
+      "stateDistrict": "WA07",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Jesús G. \"Chuy\" García",
+      "state": "Illinois",
+      "stateAbbr": "IL",
+      "district": "04",
+      "stateDistrict": "IL04",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Grace Meng",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "06",
+      "stateDistrict": "NY06",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Sydney Kamlager-Dove",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "37",
+      "stateDistrict": "CA37",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Laura Friedman",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "30",
+      "stateDistrict": "CA30",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Frank Pallone Jr.",
+      "state": "New Jersey",
+      "stateAbbr": "NJ",
+      "district": "06",
+      "stateDistrict": "NJ06",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "James E. Clyburn",
+      "state": "South Carolina",
+      "stateAbbr": "SC",
+      "district": "06",
+      "stateDistrict": "SC06",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Jared Moskowitz",
+      "state": "Florida",
+      "stateAbbr": "FL",
+      "district": "23",
+      "stateDistrict": "FL23",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Norma J. Torres",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "35",
+      "stateDistrict": "CA35",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Andrea Salinas",
+      "state": "Oregon",
+      "stateAbbr": "OR",
+      "district": "06",
+      "stateDistrict": "OR06",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Chellie Pingree",
+      "state": "Maine",
+      "stateAbbr": "ME",
+      "district": "01",
+      "stateDistrict": "ME01",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Adelita S. Grijalva",
+      "state": "Arizona",
+      "stateAbbr": "AZ",
+      "district": "07",
+      "stateDistrict": "AZ07",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Susie Lee",
+      "state": "Nevada",
+      "stateAbbr": "NV",
+      "district": "03",
+      "stateDistrict": "NV03",
+      "party": "Democratic",
+      "dateSigned": "February 3rd, 2026"
+    },
+    {
+      "name": "Ritchie Torres",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "15",
+      "stateDistrict": "NY15",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Diana DeGette",
+      "state": "Colorado",
+      "stateAbbr": "CO",
+      "district": "01",
+      "stateDistrict": "CO01",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Adriano Espaillat",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "13",
+      "stateDistrict": "NY13",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Robin L. Kelly",
+      "state": "Illinois",
+      "stateAbbr": "IL",
+      "district": "02",
+      "stateDistrict": "IL02",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Betty McCollum",
+      "state": "Minnesota",
+      "stateAbbr": "MN",
+      "district": "04",
+      "stateDistrict": "MN04",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Frank J. Mrvan",
+      "state": "Indiana",
+      "stateAbbr": "IN",
+      "district": "01",
+      "stateDistrict": "IN01",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Madeleine Dean",
+      "state": "Pennsylvania",
+      "stateAbbr": "PA",
+      "district": "04",
+      "stateDistrict": "PA04",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Cleo Fields",
+      "state": "Louisiana",
+      "stateAbbr": "LA",
+      "district": "06",
+      "stateDistrict": "LA06",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Wesley Bell",
+      "state": "Missouri",
+      "stateAbbr": "MO",
+      "district": "01",
+      "stateDistrict": "MO01",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Julie Johnson",
+      "state": "Texas",
+      "stateAbbr": "TX",
+      "district": "32",
+      "stateDistrict": "TX32",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Marilyn Strickland",
+      "state": "Washington",
+      "stateAbbr": "WA",
+      "district": "10",
+      "stateDistrict": "WA10",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Christian D. Menefee",
+      "state": "Texas",
+      "stateAbbr": "TX",
+      "district": "18",
+      "stateDistrict": "TX18",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Steve Cohen",
+      "state": "Tennessee",
+      "stateAbbr": "TN",
+      "district": "09",
+      "stateDistrict": "TN09",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Maxine Dexter",
+      "state": "Oregon",
+      "stateAbbr": "OR",
+      "district": "03",
+      "stateDistrict": "OR03",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Jonathan L. Jackson",
+      "state": "Illinois",
+      "stateAbbr": "IL",
+      "district": "01",
+      "stateDistrict": "IL01",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Robert C. \"Bobby\" Scott",
+      "state": "Virginia",
+      "stateAbbr": "VA",
+      "district": "03",
+      "stateDistrict": "VA03",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Debbie Dingell",
+      "state": "Michigan",
+      "stateAbbr": "MI",
+      "district": "06",
+      "stateDistrict": "MI06",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Ilhan Omar",
+      "state": "Minnesota",
+      "stateAbbr": "MN",
+      "district": "05",
+      "stateDistrict": "MN05",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Greg Stanton",
+      "state": "Arizona",
+      "stateAbbr": "AZ",
+      "district": "04",
+      "stateDistrict": "AZ04",
+      "party": "Democratic",
+      "dateSigned": "February 4th, 2026"
+    },
+    {
+      "name": "Darren Soto",
+      "state": "Florida",
+      "stateAbbr": "FL",
+      "district": "09",
+      "stateDistrict": "FL09",
+      "party": "Democratic",
+      "dateSigned": "February 9th, 2026"
+    },
+    {
+      "name": "Janelle S. Bynum",
+      "state": "Oregon",
+      "stateAbbr": "OR",
+      "district": "05",
+      "stateDistrict": "OR05",
+      "party": "Democratic",
+      "dateSigned": "February 9th, 2026"
+    },
+    {
+      "name": "Zoe Lofgren",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "18",
+      "stateDistrict": "CA18",
+      "party": "Democratic",
+      "dateSigned": "February 9th, 2026"
+    },
+    {
+      "name": "Chris Pappas",
+      "state": "New Hampshire",
+      "stateAbbr": "NH",
+      "district": "01",
+      "stateDistrict": "NH01",
+      "party": "Democratic",
+      "dateSigned": "February 9th, 2026"
+    },
+    {
+      "name": "Brian K. Fitzpatrick",
+      "state": "Pennsylvania",
+      "stateAbbr": "PA",
+      "district": "01",
+      "stateDistrict": "PA01",
+      "party": "Republican",
+      "dateSigned": "February 10th, 2026"
+    },
+    {
+      "name": "Raja Krishnamoorthi",
+      "state": "Illinois",
+      "stateAbbr": "IL",
+      "district": "08",
+      "stateDistrict": "IL08",
+      "party": "Democratic",
+      "dateSigned": "February 10th, 2026"
+    },
+    {
+      "name": "Mike Quigley",
+      "state": "Illinois",
+      "stateAbbr": "IL",
+      "district": "05",
+      "stateDistrict": "IL05",
+      "party": "Democratic",
+      "dateSigned": "February 10th, 2026"
+    },
+    {
+      "name": "Maxine Waters",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "43",
+      "stateDistrict": "CA43",
+      "party": "Democratic",
+      "dateSigned": "February 10th, 2026"
+    },
+    {
+      "name": "Lloyd Doggett",
+      "state": "Texas",
+      "stateAbbr": "TX",
+      "district": "37",
+      "stateDistrict": "TX37",
+      "party": "Democratic",
+      "dateSigned": "February 10th, 2026"
+    },
+    {
+      "name": "Brendan F. Boyle",
+      "state": "Pennsylvania",
+      "stateAbbr": "PA",
+      "district": "02",
+      "stateDistrict": "PA02",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Mike Thompson",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "04",
+      "stateDistrict": "CA04",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Joe Courtney",
+      "state": "Connecticut",
+      "stateAbbr": "CT",
+      "district": "02",
+      "stateDistrict": "CT02",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Joyce Beatty",
+      "state": "Ohio",
+      "stateAbbr": "OH",
+      "district": "03",
+      "stateDistrict": "OH03",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Kevin Mullin",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "15",
+      "stateDistrict": "CA15",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Judy Chu",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "28",
+      "stateDistrict": "CA28",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "April McClain Delaney",
+      "state": "Maryland",
+      "stateAbbr": "MD",
+      "district": "06",
+      "stateDistrict": "MD06",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "John B. Larson",
+      "state": "Connecticut",
+      "stateAbbr": "CT",
+      "district": "01",
+      "stateDistrict": "CT01",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Jasmine Crockett",
+      "state": "Texas",
+      "stateAbbr": "TX",
+      "district": "30",
+      "stateDistrict": "TX30",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Nanette Diaz Barragán",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "44",
+      "stateDistrict": "CA44",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Val T. Hoyle",
+      "state": "Oregon",
+      "stateAbbr": "OR",
+      "district": "04",
+      "stateDistrict": "OR04",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Greg Casar",
+      "state": "Texas",
+      "stateAbbr": "TX",
+      "district": "35",
+      "stateDistrict": "TX35",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Brad Sherman",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "32",
+      "stateDistrict": "CA32",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Haley M. Stevens",
+      "state": "Michigan",
+      "stateAbbr": "MI",
+      "district": "11",
+      "stateDistrict": "MI11",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Hakeem S. Jeffries",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "08",
+      "stateDistrict": "NY08",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Jerrold Nadler",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "12",
+      "stateDistrict": "NY12",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Herbert C. Conaway Jr.",
+      "state": "New Jersey",
+      "stateAbbr": "NJ",
+      "district": "03",
+      "stateDistrict": "NJ03",
+      "party": "Democratic",
+      "dateSigned": "February 11th, 2026"
+    },
+    {
+      "name": "Joseph D. Morelle",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "25",
+      "stateDistrict": "NY25",
+      "party": "Democratic",
+      "dateSigned": "February 12th, 2026"
+    },
+    {
+      "name": "Ami Bera",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "06",
+      "stateDistrict": "CA06",
+      "party": "Democratic",
+      "dateSigned": "February 24th, 2026"
+    },
+    {
+      "name": "Josh Riley",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "19",
+      "stateDistrict": "NY19",
+      "party": "Democratic",
+      "dateSigned": "February 24th, 2026"
+    },
+    {
+      "name": "Daniel S. Goldman",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "10",
+      "stateDistrict": "NY10",
+      "party": "Democratic",
+      "dateSigned": "February 24th, 2026"
+    },
+    {
+      "name": "Joe Neguse",
+      "state": "Colorado",
+      "stateAbbr": "CO",
+      "district": "02",
+      "stateDistrict": "CO02",
+      "party": "Democratic",
+      "dateSigned": "February 24th, 2026"
+    },
+    {
+      "name": "Jared Huffman",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "02",
+      "stateDistrict": "CA02",
+      "party": "Democratic",
+      "dateSigned": "February 24th, 2026"
+    },
+    {
+      "name": "James R. Walkinshaw",
+      "state": "Virginia",
+      "stateAbbr": "VA",
+      "district": "11",
+      "stateDistrict": "VA11",
+      "party": "Democratic",
+      "dateSigned": "February 25th, 2026"
+    },
+    {
+      "name": "Nydia M. Velázquez",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "07",
+      "stateDistrict": "NY07",
+      "party": "Democratic",
+      "dateSigned": "March 4th, 2026"
+    },
+    {
+      "name": "Christopher R. Deluzio",
+      "state": "Pennsylvania",
+      "stateAbbr": "PA",
+      "district": "17",
+      "stateDistrict": "PA17",
+      "party": "Democratic",
+      "dateSigned": "March 4th, 2026"
+    },
+    {
+      "name": "Julia Brownley",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "26",
+      "stateDistrict": "CA26",
+      "party": "Democratic",
+      "dateSigned": "March 4th, 2026"
+    },
+    {
+      "name": "Michael Lawler",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "17",
+      "stateDistrict": "NY17",
+      "party": "Republican",
+      "dateSigned": "March 4th, 2026"
+    },
+    {
+      "name": "Eugene Simon Vindman",
+      "state": "Virginia",
+      "stateAbbr": "VA",
+      "district": "07",
+      "stateDistrict": "VA07",
+      "party": "Democratic",
+      "dateSigned": "March 5th, 2026"
+    },
+    {
+      "name": "Robert Garcia",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "42",
+      "stateDistrict": "CA42",
+      "party": "Democratic",
+      "dateSigned": "March 5th, 2026"
+    },
+    {
+      "name": "Josh Gottheimer",
+      "state": "New Jersey",
+      "stateAbbr": "NJ",
+      "district": "05",
+      "stateDistrict": "NJ05",
+      "party": "Democratic",
+      "dateSigned": "March 5th, 2026"
+    },
+    {
+      "name": "Pete Aguilar",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "33",
+      "stateDistrict": "CA33",
+      "party": "Democratic",
+      "dateSigned": "March 5th, 2026"
+    },
+    {
+      "name": "Eric Swalwell",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "14",
+      "stateDistrict": "CA14",
+      "party": "Democratic",
+      "dateSigned": "March 5th, 2026"
+    },
+    {
+      "name": "Marc A. Veasey",
+      "state": "Texas",
+      "stateAbbr": "TX",
+      "district": "33",
+      "stateDistrict": "TX33",
+      "party": "Democratic",
+      "dateSigned": "March 5th, 2026"
+    },
+    {
+      "name": "John W. Mannion",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "22",
+      "stateDistrict": "NY22",
+      "party": "Democratic",
+      "dateSigned": "March 5th, 2026"
+    },
+    {
+      "name": "Derek Tran",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "45",
+      "stateDistrict": "CA45",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Maggie Goodlander",
+      "state": "New Hampshire",
+      "stateAbbr": "NH",
+      "district": "02",
+      "stateDistrict": "NH02",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "George Whitesides",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "27",
+      "stateDistrict": "CA27",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "David Scott",
+      "state": "Georgia",
+      "stateAbbr": "GA",
+      "district": "13",
+      "stateDistrict": "GA13",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Bill Foster",
+      "state": "Illinois",
+      "stateAbbr": "IL",
+      "district": "11",
+      "stateDistrict": "IL11",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Joaquin Castro",
+      "state": "Texas",
+      "stateAbbr": "TX",
+      "district": "20",
+      "stateDistrict": "TX20",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Ro Khanna",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "17",
+      "stateDistrict": "CA17",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Steny H. Hoyer",
+      "state": "Maryland",
+      "stateAbbr": "MD",
+      "district": "05",
+      "stateDistrict": "MD05",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Jason Crow",
+      "state": "Colorado",
+      "stateAbbr": "CO",
+      "district": "06",
+      "stateDistrict": "CO06",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Mike Levin",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "49",
+      "stateDistrict": "CA49",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Nikki Budzinski",
+      "state": "Illinois",
+      "stateAbbr": "IL",
+      "district": "13",
+      "stateDistrict": "IL13",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "James A. Himes",
+      "state": "Connecticut",
+      "stateAbbr": "CT",
+      "district": "04",
+      "stateDistrict": "CT04",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Patrick Ryan",
+      "state": "New York",
+      "stateAbbr": "NY",
+      "district": "18",
+      "stateDistrict": "NY18",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Donald Norcross",
+      "state": "New Jersey",
+      "stateAbbr": "NJ",
+      "district": "01",
+      "stateDistrict": "NJ01",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Sean Casten",
+      "state": "Illinois",
+      "stateAbbr": "IL",
+      "district": "06",
+      "stateDistrict": "IL06",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Bradley Scott Schneider",
+      "state": "Illinois",
+      "stateAbbr": "IL",
+      "district": "10",
+      "stateDistrict": "IL10",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Dina Titus",
+      "state": "Nevada",
+      "stateAbbr": "NV",
+      "district": "01",
+      "stateDistrict": "NV01",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Salud O. Carbajal",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "24",
+      "stateDistrict": "CA24",
+      "party": "Democratic",
+      "dateSigned": "March 17th, 2026"
+    },
+    {
+      "name": "Dave Min",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "47",
+      "stateDistrict": "CA47",
+      "party": "Democratic",
+      "dateSigned": "March 18th, 2026"
+    },
+    {
+      "name": "Juan Vargas",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "52",
+      "stateDistrict": "CA52",
+      "party": "Democratic",
+      "dateSigned": "March 18th, 2026"
+    },
+    {
+      "name": "Doris O. Matsui",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "07",
+      "stateDistrict": "CA07",
+      "party": "Democratic",
+      "dateSigned": "March 18th, 2026"
+    },
+    {
+      "name": "Jared F. Golden",
+      "state": "Maine",
+      "stateAbbr": "ME",
+      "district": "02",
+      "stateDistrict": "ME02",
+      "party": "Democratic",
+      "dateSigned": "March 18th, 2026"
+    },
+    {
+      "name": "Vicente Gonzalez",
+      "state": "Texas",
+      "stateAbbr": "TX",
+      "district": "34",
+      "stateDistrict": "TX34",
+      "party": "Democratic",
+      "dateSigned": "March 18th, 2026"
+    },
+    {
+      "name": "Sharice Davids",
+      "state": "Kansas",
+      "stateAbbr": "KS",
+      "district": "03",
+      "stateDistrict": "KS03",
+      "party": "Democratic",
+      "dateSigned": "March 18th, 2026"
+    },
+    {
+      "name": "Mark Takano",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "39",
+      "stateDistrict": "CA39",
+      "party": "Democratic",
+      "dateSigned": "March 18th, 2026"
+    },
+    {
+      "name": "Rick Larsen",
+      "state": "Washington",
+      "stateAbbr": "WA",
+      "district": "02",
+      "stateDistrict": "WA02",
+      "party": "Democratic",
+      "dateSigned": "March 19th, 2026"
+    },
+    {
+      "name": "Linda T. Sánchez",
+      "state": "California",
+      "stateAbbr": "CA",
+      "district": "38",
+      "stateDistrict": "CA38",
+      "party": "Democratic",
+      "dateSigned": "March 19th, 2026"
+    }
+  ]
+}

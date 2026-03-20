@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import type { FeatureCollection } from 'geojson';
 import ProgressBar from './ProgressBar';
 import AddressLookup from './AddressLookup';
 import TargetedRepList from './TargetedRepList';
+import CallScript from './CallScript';
+import type { DistrictClickInfo } from './Map';
 
 const Map = dynamic(() => import('./Map'), { ssr: false });
 
@@ -28,6 +30,7 @@ interface SignerData {
 
 interface TargetedRep {
   name: string;
+  party: string;
   stateDistrict: string;
   phone: string;
   area: string;
@@ -44,6 +47,8 @@ export default function ClientPage({ signerData, targetedReps }: ClientPageProps
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [activeTab, setActiveTab] = useState<'map' | 'address' | 'search'>('map');
   const [browserLocation, setBrowserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<DistrictClickInfo | null>(null);
+  const calloutRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
@@ -58,6 +63,12 @@ export default function ClientPage({ signerData, targetedReps }: ClientPageProps
       .then((data) => setGeoData(data));
   }, []);
 
+  useEffect(() => {
+    if (selectedDistrict && calloutRef.current) {
+      calloutRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [selectedDistrict]);
+
   return (
     <>
       {/* Header */}
@@ -68,7 +79,7 @@ export default function ClientPage({ signerData, targetedReps }: ClientPageProps
           </h1>
           <p className="mt-3 text-blue-100 text-lg max-w-2xl">
             A discharge petition (H.Res. 965) needs 218 House signatures to force a vote
-            on H.R. 1689, which would extend Temporary Protected Status for Haiti.
+            on H.R. 1689, which would designate Haiti for Temporary Protected Status.
             Look up your rep and make the call.
           </p>
           <div className="mt-6">
@@ -137,7 +148,55 @@ export default function ClientPage({ signerData, targetedReps }: ClientPageProps
                     <span className="inline-block w-3 h-3 rounded-sm bg-gray-300 ml-3 mr-1 align-middle" /> Not targeted
                     &mdash; Click a district for details.
                   </p>
-                  <Map signerData={signerData} targetedReps={targetedReps} userLocation={userLocation || browserLocation} initialZoom={browserLocation && !userLocation ? 7 : undefined} />
+                  <Map signerData={signerData} targetedReps={targetedReps} userLocation={userLocation || browserLocation} initialZoom={browserLocation && !userLocation ? 7 : undefined} onDistrictClick={setSelectedDistrict} />
+                  {selectedDistrict && (
+                    <div id="district-callout" ref={calloutRef} className="mt-4 border border-gray-200 rounded-lg bg-white p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <h3 className="font-semibold text-gray-900 text-lg">
+                            {selectedDistrict.signer?.name || selectedDistrict.targeted?.name || `${selectedDistrict.stateAbbr}-${selectedDistrict.district}`}
+                            {(selectedDistrict.signer?.party || selectedDistrict.targeted?.party) && (
+                              <span className="text-gray-500 font-normal"> ({selectedDistrict.signer?.party || selectedDistrict.targeted?.party})</span>
+                            )}
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            {selectedDistrict.stateAbbr}-{selectedDistrict.district}
+                            {selectedDistrict.targeted?.area && ` — ${selectedDistrict.targeted.area}`}
+                          </p>
+                          {selectedDistrict.signer && (
+                            <p className="mt-1 text-sm font-semibold text-green-600">
+                              Signed {selectedDistrict.signer.dateSigned}
+                            </p>
+                          )}
+                          {!selectedDistrict.signer && selectedDistrict.targeted && (
+                            <p className="mt-1 text-sm font-semibold text-amber-600">
+                              Not yet signed — call this rep!
+                            </p>
+                          )}
+                          {!selectedDistrict.signer && !selectedDistrict.targeted && (
+                            <p className="mt-1 text-sm font-semibold text-gray-500">
+                              Not yet signed
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => setSelectedDistrict(null)}
+                          className="shrink-0 text-gray-400 hover:text-gray-600"
+                          aria-label="Close"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+                      {!selectedDistrict.signer && (
+                        <CallScript
+                          repName={selectedDistrict.targeted?.name || `your representative (${selectedDistrict.stateAbbr}-${selectedDistrict.district})`}
+                          phone={selectedDistrict.targeted?.phone}
+                        />
+                      )}
+                    </div>
+                  )}
                 </>
               )}
             </div>

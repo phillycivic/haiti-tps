@@ -13,6 +13,7 @@ const ABBR_TO_STATE: Record<string, string> = {
 
 interface TargetedRep {
   name: string;
+  party: string;
   stateDistrict: string;
   phone: string;
   area: string;
@@ -63,6 +64,7 @@ export default function TargetedRepList({ targetedReps }: TargetedRepListProps) 
             <TargetedRepCard
               key={rep.stateDistrict}
               name={rep.name}
+              party={rep.party}
               area={rep.area}
               stateDistrict={rep.stateDistrict}
               phone={rep.phone}

@@ -5,6 +5,7 @@ import ClientPage from './components/ClientPage';
 
 interface TargetedRep {
   name: string;
+  party: string;
   stateDistrict: string;
   phone: string;
   area: string;
@@ -19,8 +20,8 @@ function loadTargetedReps(): TargetedRep[] {
     .slice(1)
     .filter(Boolean)
     .map(line => {
-      const [name, , , stateDistrict, phone, area, searchTerms] = line.split(',');
-      return { name, stateDistrict, phone, area: area || '', searchTerms: searchTerms || '' };
+      const [name, party, , , stateDistrict, phone, area, searchTerms] = line.split(',');
+      return { name, party, stateDistrict, phone, area: area || '', searchTerms: searchTerms || '' };
     });
 }
 

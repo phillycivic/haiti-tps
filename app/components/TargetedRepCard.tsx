@@ -5,12 +5,13 @@ import CallScript from './CallScript';
 
 interface TargetedRepCardProps {
   name: string;
+  party: string;
   area: string;
   stateDistrict: string;
   phone: string;
 }
 
-export default function TargetedRepCard({ name, area, stateDistrict, phone }: TargetedRepCardProps) {
+export default function TargetedRepCard({ name, party, area, stateDistrict, phone }: TargetedRepCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   const districtLabel = `${stateDistrict.slice(0, 2)}-${stateDistrict.slice(2)}`;
@@ -24,7 +25,7 @@ export default function TargetedRepCard({ name, area, stateDistrict, phone }: Ta
         className="w-full text-left px-4 py-3 flex items-center justify-between gap-3 hover:bg-gray-50 transition-colors rounded-lg"
       >
         <div className="min-w-0">
-          <div className="font-semibold text-gray-900">{name}</div>
+          <div className="font-semibold text-gray-900">{name} ({party})</div>
           <div className="text-sm text-gray-500">
             {districtLabel} &mdash; {area}
           </div>

@@ -33,6 +33,7 @@ interface DistrictProperties {
 
 interface TargetedRep {
   name: string;
+  party: string;
   stateDistrict: string;
   phone: string;
   area: string;
@@ -53,14 +54,23 @@ const userIcon = L.divIcon({
   iconAnchor: [7, 7],
 });
 
+export interface DistrictClickInfo {
+  key: string;
+  stateAbbr: string;
+  district: string;
+  signer?: Signer;
+  targeted?: TargetedRep;
+}
+
 interface MapProps {
   signerData: SignerData;
   targetedReps: TargetedRep[];
   userLocation?: { lat: number; lng: number } | null;
   initialZoom?: number;
+  onDistrictClick?: (info: DistrictClickInfo) => void;
 }
 
-export default function DistrictMap({ signerData, targetedReps, userLocation, initialZoom }: MapProps) {
+export default function DistrictMap({ signerData, targetedReps, userLocation, initialZoom, onDistrictClick }: MapProps) {
   const [geoData, setGeoData] = useState<FeatureCollection | null>(null);
 
   useEffect(() => {
@@ -125,21 +135,32 @@ export default function DistrictMap({ signerData, targetedReps, userLocation, in
       const rep = targetedByDistrict.get(key);
       popupContent = `
         <div style="min-width: 180px">
-          <strong>${rep?.name || stateAbbr + '-' + district}</strong><br/>
+          <strong>${rep?.name || stateAbbr + '-' + district}${rep?.party ? ' (' + rep.party + ')' : ''}</strong><br/>
           ${stateAbbr}-${district}${rep?.area ? ' &mdash; ' + rep.area : ''}<br/>
           <span style="color: #ca8a04; font-weight: 600">Not yet signed &mdash; call this rep!</span><br/>
-          <a href="tel:${rep?.phone?.replace(/[^0-9]/g, '')}" style="color: #2563eb">${rep?.phone}</a>
+          <a href="#district-callout" onclick="event.preventDefault();document.getElementById('district-callout')?.scrollIntoView({behavior:'smooth',block:'nearest'})" style="color: #2563eb; font-size: 0.85em; text-decoration: underline; cursor: pointer">&#x25BC; See below for call script</a>
         </div>
       `;
     } else {
       popupContent = `
         <div style="min-width: 160px">
           <strong>${stateAbbr}-${district}</strong><br/>
-          <span style="color: #6b7280; font-weight: 600">Not yet signed</span>
+          <span style="color: #6b7280; font-weight: 600">Not yet signed</span><br/>
+          <a href="#district-callout" onclick="event.preventDefault();document.getElementById('district-callout')?.scrollIntoView({behavior:'smooth',block:'nearest'})" style="color: #2563eb; font-size: 0.85em; text-decoration: underline; cursor: pointer">&#x25BC; See below for call script</a>
         </div>
       `;
     }
     layer.bindPopup(popupContent);
+
+    layer.on('click', () => {
+      onDistrictClick?.({
+        key,
+        stateAbbr,
+        district,
+        signer: signerByDistrict.get(key),
+        targeted: targetedByDistrict.get(key),
+      });
+    });
   };
 
   if (!geoData) {

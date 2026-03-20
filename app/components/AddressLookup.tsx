@@ -45,6 +45,7 @@ const US_STATES = [
 
 interface TargetedRep {
   name: string;
+  party: string;
   stateDistrict: string;
   phone: string;
   area: string;
@@ -239,7 +240,7 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
             <div className="text-3xl">&#10003;</div>
             <div>
               <h3 className="font-semibold text-green-800 text-lg">
-                {result.signer.name} has signed!
+                {result.signer.name} ({result.signer.party}) has signed!
               </h3>
               <p className="text-green-700 text-sm mt-1">
                 Your representative ({result.stateAbbr}-{result.district}, {result.signer.party}) signed the discharge petition on {result.signer.dateSigned}.
@@ -262,7 +263,7 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
               <div className="text-3xl text-red-600">!</div>
               <div>
                 <h3 className="font-semibold text-red-800 text-lg">
-                  {targeted ? `${targeted.name}` : `Your rep`} ({result.stateAbbr}-{result.district}) has NOT signed yet
+                  {targeted ? `${targeted.name} (${targeted.party})` : `Your rep`} ({result.stateAbbr}-{result.district}) has NOT signed yet
                 </h3>
                 <p className="text-red-700 text-sm mt-1">
                   {targeted

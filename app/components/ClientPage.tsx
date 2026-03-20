@@ -1,15 +1,18 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import type { FeatureCollection } from 'geojson';
+import type { FeatureCollection, Feature, Polygon, MultiPolygon } from 'geojson';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import { point } from '@turf/helpers';
 import ProgressBar from './ProgressBar';
 import AddressLookup from './AddressLookup';
 import TargetedRepList from './TargetedRepList';
 import CallScript from './CallScript';
+import { FIPS_TO_STATE } from './fips';
 import type { DistrictClickInfo } from './Map';
 
-const Map = dynamic(() => import('./Map'), { ssr: false });
+const DistrictMap = dynamic(() => import('./Map'), { ssr: false });
 
 interface Signer {
   name: string;
@@ -62,6 +65,48 @@ export default function ClientPage({ signerData, targetedReps }: ClientPageProps
       .then((res) => res.json())
       .then((data) => setGeoData(data));
   }, []);
+
+  const signerByDistrict = useMemo(
+    () => new Map(signerData.signers.map((s) => [s.stateDistrict, s])),
+    [signerData.signers]
+  );
+  const targetedByDistrict = useMemo(
+    () => new Map(targetedReps.map((t) => [t.stateDistrict, t])),
+    [targetedReps]
+  );
+
+  const findDistrict = useCallback(
+    (lat: number, lng: number): { stateAbbr: string; district: string } | null => {
+      if (!geoData) return null;
+      const pt = point([lng, lat]);
+      for (const feature of geoData.features) {
+        const f = feature as Feature<Polygon | MultiPolygon, { STATEFP: string; CD118FP: string }>;
+        if (booleanPointInPolygon(pt, f)) {
+          const stateAbbr = FIPS_TO_STATE[f.properties.STATEFP] || f.properties.STATEFP;
+          return { stateAbbr, district: f.properties.CD118FP };
+        }
+      }
+      return null;
+    },
+    [geoData]
+  );
+
+  // Auto-select district from browser geolocation
+  useEffect(() => {
+    if (!browserLocation || !geoData || selectedDistrict) return;
+    const dist = findDistrict(browserLocation.lat, browserLocation.lng);
+    if (!dist) return;
+    const key = `${dist.stateAbbr}${dist.district}`;
+    const signer = signerByDistrict.get(key);
+    const targeted = targetedByDistrict.get(key);
+    setSelectedDistrict({
+      key,
+      stateAbbr: dist.stateAbbr,
+      district: dist.district,
+      signer: signer || undefined,
+      targeted: targeted || undefined,
+    });
+  }, [browserLocation, geoData, findDistrict, signerByDistrict, targetedByDistrict]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (selectedDistrict && calloutRef.current) {
@@ -148,7 +193,7 @@ export default function ClientPage({ signerData, targetedReps }: ClientPageProps
                     <span className="inline-block w-3 h-3 rounded-sm bg-gray-300 ml-3 mr-1 align-middle" /> Not targeted
                     &mdash; Click a district for details.
                   </p>
-                  <Map signerData={signerData} targetedReps={targetedReps} userLocation={userLocation || browserLocation} initialZoom={browserLocation && !userLocation ? 7 : undefined} onDistrictClick={setSelectedDistrict} />
+                  <DistrictMap signerData={signerData} targetedReps={targetedReps} userLocation={userLocation || browserLocation} initialZoom={browserLocation && !userLocation ? 7 : undefined} selectedDistrictKey={selectedDistrict?.key} onDistrictClick={setSelectedDistrict} />
                   {selectedDistrict && (
                     <div id="district-callout" ref={calloutRef} className="mt-4 border border-gray-200 rounded-lg bg-white p-4">
                       <div className="flex items-start justify-between gap-3">

@@ -67,11 +67,29 @@ interface MapProps {
   targetedReps: TargetedRep[];
   userLocation?: { lat: number; lng: number } | null;
   initialZoom?: number;
+  selectedDistrictKey?: string | null;
   onDistrictClick?: (info: DistrictClickInfo) => void;
 }
 
-export default function DistrictMap({ signerData, targetedReps, userLocation, initialZoom, onDistrictClick }: MapProps) {
+function OpenDistrictPopup({ districtKey, layersRef }: { districtKey: string; layersRef: React.RefObject<globalThis.Map<string, Layer>> }) {
+  const map = useMap();
+  useEffect(() => {
+    // Small delay to let FlyToLocation start first and GeoJSON layers to bindPopup
+    const timer = setTimeout(() => {
+      const layer = layersRef.current?.get(districtKey);
+      if (layer && 'openPopup' in layer) {
+        const geoLayer = layer as L.Layer & { getBounds?: () => L.LatLngBounds; openPopup: () => void };
+        geoLayer.openPopup();
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [districtKey, layersRef, map]);
+  return null;
+}
+
+export default function DistrictMap({ signerData, targetedReps, userLocation, initialZoom, selectedDistrictKey, onDistrictClick }: MapProps) {
   const [geoData, setGeoData] = useState<FeatureCollection | null>(null);
+  const layersRef = useRef<globalThis.Map<string, Layer>>(new globalThis.Map());
 
   useEffect(() => {
     fetch('/districts.geojson')
@@ -151,6 +169,7 @@ export default function DistrictMap({ signerData, targetedReps, userLocation, in
       `;
     }
     layer.bindPopup(popupContent);
+    layersRef.current.set(key, layer);
 
     layer.on('click', () => {
       onDistrictClick?.({
@@ -197,6 +216,9 @@ export default function DistrictMap({ signerData, targetedReps, userLocation, in
             <Popup>Your location</Popup>
           </Marker>
         </>
+      )}
+      {selectedDistrictKey && (
+        <OpenDistrictPopup districtKey={selectedDistrictKey} layersRef={layersRef} />
       )}
     </MapContainer>
   );

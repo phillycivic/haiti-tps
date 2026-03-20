@@ -157,7 +157,6 @@ export default function DistrictMap({ signerData, targetedReps, userLocation, in
       className="w-full h-[300px] sm:h-[400px] md:h-[500px] rounded-lg touch-manipulation"
       scrollWheelZoom={true}
       dragging={true}
-      tap={true}
       zoomControl={false}
     >
       <ZoomControl position="topright" />

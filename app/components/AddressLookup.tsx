@@ -161,20 +161,20 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
             placeholder="Enter your ZIP code"
             required
             pattern="[0-9]{5}"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-lg"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-ring focus:border-ring text-gray-900 text-lg shadow-sm"
           />
         </div>
         <button
           type="submit"
           disabled={loading || !geoData || zip.length !== 5}
-          className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold py-3 px-6 rounded-lg transition-colors shrink-0"
+          className="bg-gradient-to-r from-action to-action-end hover:from-action-dark hover:to-action-end-dark disabled:from-gray-300 disabled:to-gray-300 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-sm hover:shadow-md shrink-0"
         >
           {loading ? 'Looking up...' : !geoData ? 'Loading...' : 'Find My Rep'}
         </button>
       </form>
 
       {error && (
-        <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
+        <div className="mt-4 bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
           {error}
         </div>
       )}
@@ -193,10 +193,10 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
             return (
               <div
                 key={r.key}
-                className={`rounded-lg border p-4 ${
+                className={`rounded-xl border p-5 shadow-sm ${
                   r.signer
-                    ? 'bg-green-50 border-green-200'
-                    : 'bg-amber-50 border-amber-200'
+                    ? 'bg-emerald-50 border-emerald-200'
+                    : 'bg-amber-50 border-amber-300'
                 }`}
               >
                 <h3 className="font-bold text-gray-900 text-lg">
@@ -212,17 +212,17 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
 
                 {r.signer ? (
                   <>
-                    <p className="mt-1 text-green-700 font-semibold text-sm">
+                    <p className="mt-1 text-emerald-700 font-semibold text-sm">
                       Signed the petition on {r.signer.dateSigned}
                     </p>
                     {onSwitchToNetwork && (
-                      <div className="mt-3 bg-white/70 rounded-lg p-3 border border-green-200">
+                      <div className="mt-3 bg-white/80 rounded-xl p-3 border border-emerald-200">
                         <p className="text-sm text-gray-700 font-medium">
                           Awesome — your representative has already signed. Reach out to your network to see if their reps have too!
                         </p>
                         <button
                           onClick={onSwitchToNetwork}
-                          className="mt-2 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors"
+                          className="mt-2 inline-flex items-center gap-2 bg-gradient-to-r from-action to-action-end hover:from-action-dark hover:to-action-end-dark text-white font-semibold py-2 px-4 rounded-xl text-sm transition-all shadow-sm"
                         >
                           Reach Out to Your Network &rarr;
                         </button>
@@ -231,7 +231,7 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
                   </>
                 ) : (
                   <>
-                    <p className="mt-1 text-amber-700 font-semibold">
+                    <p className="mt-1 text-orange-700 font-bold">
                       Has NOT signed yet &mdash; your call matters!
                     </p>
                     <CallScript

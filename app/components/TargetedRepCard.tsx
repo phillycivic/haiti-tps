@@ -18,11 +18,11 @@ export default function TargetedRepCard({ name, party, area, stateDistrict, phon
   const phoneDigits = phone.replace(/[^0-9]/g, '');
 
   return (
-    <div className="border border-gray-200 rounded-lg bg-white">
+    <div className="border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow">
       <button
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
-        className="w-full text-left px-4 py-3 flex items-center justify-between gap-3 hover:bg-gray-50 transition-colors rounded-lg"
+        className="w-full text-left px-4 py-3.5 flex items-center justify-between gap-3 hover:bg-brand-tint transition-colors rounded-xl"
       >
         <div className="min-w-0">
           <div className="font-semibold text-gray-900">{name} ({party})</div>
@@ -34,7 +34,7 @@ export default function TargetedRepCard({ name, party, area, stateDistrict, phon
           <a
             href={`tel:${phoneDigits}`}
             onClick={(e) => e.stopPropagation()}
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium hidden sm:block"
+            className="text-link hover:text-link-hover text-sm font-medium hidden sm:block"
           >
             {phone}
           </a>
@@ -52,7 +52,7 @@ export default function TargetedRepCard({ name, party, area, stateDistrict, phon
         <div className="px-4 pb-4">
           <a
             href={`tel:${phoneDigits}`}
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium sm:hidden block mb-2"
+            className="text-link hover:text-link-hover text-sm font-medium sm:hidden block mb-2"
           >
             {phone}
           </a>

@@ -74,15 +74,28 @@ export default function CallScript({ repName, city, state, zip, phone, callScrip
   };
 
   return (
-    <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-4">
-      <h3 className="font-semibold text-gray-800 mb-2">Your Call Script</h3>
-      <p className="text-gray-700 text-sm leading-relaxed italic mb-3">
+    <div className="mt-4 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/80 rounded-xl p-5 shadow-sm">
+      <div className="flex items-start justify-between mb-2">
+        <h3 className="font-bold text-gray-900 text-base">Your Call Script</h3>
+        <p className="text-right font-bold text-gray-800 text-lg">
+          {phone ? (
+            <a href={`tel:${phone.replace(/[^0-9]/g, '')}`} className="hover:text-cta transition-colors">
+              {phone}
+            </a>
+          ) : (
+            <a href="tel:2022243121" className="hover:text-cta transition-colors">
+              (202) 224-3121
+            </a>
+          )}
+        </p>
+      </div>
+      <p className="text-gray-700 text-sm leading-relaxed italic mb-4 bg-white/60 rounded-lg p-3 border border-amber-100">
         &ldquo;{script}&rdquo;
       </p>
       <div className="flex flex-col sm:flex-row gap-2">
         <a
           href={`tel:${phone ? phone.replace(/[^0-9]/g, '') : '2022243121'}`}
-          className="flex-1 inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+          className="flex-1 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cta to-cta-end hover:from-cta-dark hover:to-cta-end-dark text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md hover:shadow-lg"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
@@ -91,7 +104,7 @@ export default function CallScript({ repName, city, state, zip, phone, callScrip
         </a>
         <button
           onClick={handleCopyScript}
-          className="flex-1 inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors border border-gray-300"
+          className="flex-1 inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3.5 px-4 rounded-xl transition-all border border-gray-200 shadow-sm hover:shadow-md"
         >
           {copiedScript ? (
             <>
@@ -111,22 +124,15 @@ export default function CallScript({ repName, city, state, zip, phone, callScrip
           )}
         </button>
       </div>
-      <p className="text-xs text-gray-500 mt-2 text-center mb-3">
-        {phone ? (
-          <>{repName}: {phone}</>
-        ) : (
-          <>House Switchboard: (202) 224-3121 &mdash; Ask to be connected to your representative</>
-        )}
-      </p>
-      <div className="border-t border-amber-200 pt-3">
+      <div className="mt-2 mb-3" />
+      <div className="border-t border-amber-200/60 pt-4 mt-1">
         <p className="text-xs text-gray-600 mb-2 font-medium">Forward to a friend to call their rep:</p>
         <div className="flex gap-2">
-          {/* Mobile: mailto opens the mail app */}
           <a
             href={emailHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="sm:hidden flex-1 inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors text-sm"
+            className="sm:hidden flex-1 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-action to-action-end hover:from-action-dark hover:to-action-end-dark text-white font-semibold py-2.5 px-4 rounded-xl transition-all text-sm shadow-sm"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
               <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
@@ -134,10 +140,9 @@ export default function CallScript({ repName, city, state, zip, phone, callScrip
             </svg>
             Email a Friend
           </a>
-          {/* Desktop: show the text to copy instead */}
           <button
             onClick={() => setShowEmailText((v) => !v)}
-            className="hidden sm:inline-flex flex-1 items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors text-sm"
+            className="hidden sm:inline-flex flex-1 items-center justify-center gap-2 bg-gradient-to-r from-action to-action-end hover:from-action-dark hover:to-action-end-dark text-white font-semibold py-2.5 px-4 rounded-xl transition-all text-sm shadow-sm"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
               <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
@@ -146,7 +151,6 @@ export default function CallScript({ repName, city, state, zip, phone, callScrip
             {showEmailText ? 'Hide email text' : 'Email a Friend'}
           </button>
         </div>
-        {/* Desktop: editable text + copy button */}
         {showEmailText && (
           <div className="hidden sm:block mt-3">
             <p className="text-xs text-gray-600 mb-2">Copy this text and paste it into an email to your network:</p>
@@ -154,7 +158,7 @@ export default function CallScript({ repName, city, state, zip, phone, callScrip
               value={editableEmail}
               onChange={(e) => setEditableEmail(e.target.value)}
               rows={12}
-              className="w-full text-xs text-gray-700 bg-gray-50 border border-gray-200 rounded-lg p-3 leading-relaxed resize-y focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+              className="w-full text-xs text-gray-700 bg-gray-50 border border-gray-200 rounded-lg p-3 leading-relaxed resize-y focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
               aria-label="Editable email text"
             />
             <button
@@ -180,14 +184,13 @@ export default function CallScript({ repName, city, state, zip, phone, callScrip
             </button>
           </div>
         )}
-        {/* Mobile: always show editable text below the mailto button */}
         <div className="sm:hidden mt-3">
           <p className="text-xs text-gray-600 mb-2">Edit and copy the email text:</p>
           <textarea
             value={editableEmail}
             onChange={(e) => setEditableEmail(e.target.value)}
             rows={12}
-            className="w-full text-xs text-gray-700 bg-gray-50 border border-gray-200 rounded-lg p-3 leading-relaxed resize-y focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+            className="w-full text-xs text-gray-700 bg-gray-50 border border-gray-200 rounded-lg p-3 leading-relaxed resize-y focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
             aria-label="Editable email text"
           />
           <button

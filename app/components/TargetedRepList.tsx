@@ -70,7 +70,7 @@ export default function TargetedRepList({ targetedReps }: TargetedRepListProps) 
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search by city, state, or rep name..."
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 mb-4"
+        className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-ring focus:border-ring text-gray-900 mb-4 shadow-sm"
       />
       {filtered.length === 0 ? (
         <p className="text-gray-500 text-sm text-center py-4">

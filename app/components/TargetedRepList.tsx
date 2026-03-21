@@ -62,7 +62,7 @@ export default function TargetedRepList({ targetedReps }: TargetedRepListProps) 
   return (
     <div>
       <label htmlFor="rep-search" className="block text-sm font-medium text-gray-700 mb-1">
-        Know someone in one of these areas? Search to find their rep.
+        Search by city, state, or name to find a rep in your network:
       </label>
       <input
         id="rep-search"

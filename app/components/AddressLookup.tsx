@@ -51,6 +51,7 @@ interface AddressLookupProps {
   geoData: FeatureCollection | null;
   targetedReps?: TargetedRep[];
   onLocationFound?: (location: { lat: number; lng: number }) => void;
+  onSwitchToNetwork?: () => void;
 }
 
 // Sample offsets (~2mi grid) to catch ZIPs that span multiple districts
@@ -61,7 +62,7 @@ const SAMPLE_OFFSETS = [
   [0.05, 0], [-0.05, 0], [0, 0.05], [0, -0.05],
 ];
 
-export default function AddressLookup({ signerData, geoData, targetedReps, onLocationFound }: AddressLookupProps) {
+export default function AddressLookup({ signerData, geoData, targetedReps, onLocationFound, onSwitchToNetwork }: AddressLookupProps) {
   const [zip, setZip] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -208,9 +209,24 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
                 </p>
 
                 {r.signer ? (
-                  <p className="mt-1 text-green-700 font-semibold text-sm">
-                    Signed the petition on {r.signer.dateSigned}. Share this page to help reach 218!
-                  </p>
+                  <>
+                    <p className="mt-1 text-green-700 font-semibold text-sm">
+                      Signed the petition on {r.signer.dateSigned}
+                    </p>
+                    {onSwitchToNetwork && (
+                      <div className="mt-3 bg-white/70 rounded-lg p-3 border border-green-200">
+                        <p className="text-sm text-gray-700 font-medium">
+                          Awesome — your representative has already signed. Reach out to your network to see if their reps have too!
+                        </p>
+                        <button
+                          onClick={onSwitchToNetwork}
+                          className="mt-2 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors"
+                        >
+                          Reach Out to Your Network &rarr;
+                        </button>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <>
                     <p className="mt-1 text-amber-700 font-semibold">

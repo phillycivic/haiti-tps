@@ -44,14 +44,15 @@ interface ClientPageProps {
   signerData: SignerData;
   targetedReps: TargetedRep[];
   learnContent: string;
+  callScriptTemplate?: string;
+  emailTemplate?: string;
 }
 
-export default function ClientPage({ signerData, targetedReps, learnContent }: ClientPageProps) {
+export default function ClientPage({ signerData, targetedReps, learnContent, callScriptTemplate, emailTemplate }: ClientPageProps) {
   const [geoData, setGeoData] = useState<FeatureCollection | null>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [browserLocation, setBrowserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictClickInfo | null>(null);
-  const [showMap, setShowMap] = useState(false);
   const [activeTab, setActiveTab] = useState<'you' | 'network' | 'learn'>('you');
   const calloutRef = useRef<HTMLDivElement>(null);
   const autoSelectedRef = useRef(false);
@@ -231,7 +232,7 @@ export default function ClientPage({ signerData, targetedReps, learnContent }: C
                           onClick={() => setActiveTab('network')}
                           className="mt-3 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-lg text-sm transition-colors"
                         >
-                          Help Your Network &rarr;
+                          Help us spread the word &mdash; reach out to your network &rarr;
                         </button>
                       </div>
                     </>
@@ -243,6 +244,8 @@ export default function ClientPage({ signerData, targetedReps, learnContent }: C
                       <CallScript
                         repName={autoDistrict.targeted?.name || `your representative (${autoDistrict.stateAbbr}-${autoDistrict.district})`}
                         phone={autoDistrict.targeted?.phone}
+                        callScriptTemplate={callScriptTemplate}
+                        emailTemplate={emailTemplate}
                       />
                     </>
                   )}
@@ -261,9 +264,78 @@ export default function ClientPage({ signerData, targetedReps, learnContent }: C
                   <p className="text-sm text-gray-500 mb-4">
                     Enter your ZIP code to find your congressional district and see if your rep has signed.
                   </p>
-                  <AddressLookup signerData={signerData} geoData={geoData} targetedReps={targetedReps} onSwitchToNetwork={() => setActiveTab('network')} />
+                  <AddressLookup signerData={signerData} geoData={geoData} targetedReps={targetedReps} onSwitchToNetwork={() => setActiveTab('network')} callScriptTemplate={callScriptTemplate} emailTemplate={emailTemplate} />
                 </div>
               )}
+
+              {/* Signature map */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-1">Signature map</h2>
+                <p className="text-sm text-gray-500 mb-4">
+                  <span className="inline-block w-3 h-3 rounded-sm bg-green-500 mr-1 align-middle" /> Signed
+                  <span className="inline-block w-3 h-3 rounded-sm bg-yellow-400 ml-3 mr-1 align-middle" /> Targeted
+                  <span className="inline-block w-3 h-3 rounded-sm bg-gray-300 ml-3 mr-1 align-middle" /> Not targeted
+                  &mdash; Click a district for details.
+                </p>
+                <DistrictMap
+                  signerData={signerData}
+                  targetedReps={targetedReps}
+                  userLocation={userLocation || browserLocation}
+                  initialZoom={browserLocation && !userLocation ? 7 : undefined}
+                  selectedDistrictKey={selectedDistrict?.key}
+                  onDistrictClick={setSelectedDistrict}
+                />
+                {selectedDistrict && (
+                  <div id="district-callout" ref={calloutRef} className="mt-4 border border-gray-200 rounded-lg bg-white p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-lg">
+                          {selectedDistrict.signer?.name || selectedDistrict.targeted?.name || `${selectedDistrict.stateAbbr}-${selectedDistrict.district}`}
+                          {(selectedDistrict.signer?.party || selectedDistrict.targeted?.party) && (
+                            <span className="text-gray-500 font-normal"> ({selectedDistrict.signer?.party || selectedDistrict.targeted?.party})</span>
+                          )}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {selectedDistrict.stateAbbr}-{selectedDistrict.district}
+                          {selectedDistrict.targeted?.area && ` \u2014 ${selectedDistrict.targeted.area}`}
+                        </p>
+                        {selectedDistrict.signer && (
+                          <p className="mt-1 text-sm font-semibold text-green-600">
+                            Signed {selectedDistrict.signer.dateSigned}
+                          </p>
+                        )}
+                        {!selectedDistrict.signer && selectedDistrict.targeted && (
+                          <p className="mt-1 text-sm font-semibold text-amber-600">
+                            Not yet signed &mdash; call this rep!
+                          </p>
+                        )}
+                        {!selectedDistrict.signer && !selectedDistrict.targeted && (
+                          <p className="mt-1 text-sm font-semibold text-gray-500">
+                            Not yet signed
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => setSelectedDistrict(null)}
+                        className="shrink-0 text-gray-400 hover:text-gray-600"
+                        aria-label="Close"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    </div>
+                    {!selectedDistrict.signer && (
+                      <CallScript
+                        repName={selectedDistrict.targeted?.name || `your representative (${selectedDistrict.stateAbbr}-${selectedDistrict.district})`}
+                        phone={selectedDistrict.targeted?.phone}
+                        callScriptTemplate={callScriptTemplate}
+                        emailTemplate={emailTemplate}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -279,7 +351,7 @@ export default function ClientPage({ signerData, targetedReps, learnContent }: C
                 <p className="text-sm text-gray-500 mb-4">
                   Enter a friend&rsquo;s ZIP to see if their rep has signed &mdash; and get a call script to forward to them.
                 </p>
-                <AddressLookup signerData={signerData} geoData={geoData} targetedReps={targetedReps} />
+                <AddressLookup signerData={signerData} geoData={geoData} targetedReps={targetedReps} callScriptTemplate={callScriptTemplate} emailTemplate={emailTemplate} />
               </div>
 
               {/* Key districts */}
@@ -295,86 +367,67 @@ export default function ClientPage({ signerData, targetedReps, learnContent }: C
 
               {/* Signature map */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
-                <button
-                  onClick={() => setShowMap(!showMap)}
-                  className="w-full flex items-center justify-between"
-                >
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-900 text-left">Signature map</h2>
-                    <p className="text-sm text-gray-500 text-left">See which districts have signed and which haven&rsquo;t.</p>
-                  </div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className={`h-6 w-6 text-gray-400 transition-transform shrink-0 ${showMap ? 'rotate-180' : ''}`}
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </button>
-                {showMap && (
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-500 mb-4">
-                      <span className="inline-block w-3 h-3 rounded-sm bg-green-500 mr-1 align-middle" /> Signed
-                      <span className="inline-block w-3 h-3 rounded-sm bg-yellow-400 ml-3 mr-1 align-middle" /> Targeted
-                      <span className="inline-block w-3 h-3 rounded-sm bg-gray-300 ml-3 mr-1 align-middle" /> Not targeted
-                      &mdash; Click a district for details.
-                    </p>
-                    <DistrictMap
-                      signerData={signerData}
-                      targetedReps={targetedReps}
-                      userLocation={userLocation || browserLocation}
-                      initialZoom={browserLocation && !userLocation ? 7 : undefined}
-                      selectedDistrictKey={selectedDistrict?.key}
-                      onDistrictClick={setSelectedDistrict}
-                    />
-                    {selectedDistrict && (
-                      <div id="district-callout" ref={calloutRef} className="mt-4 border border-gray-200 rounded-lg bg-white p-4">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <h3 className="font-semibold text-gray-900 text-lg">
-                              {selectedDistrict.signer?.name || selectedDistrict.targeted?.name || `${selectedDistrict.stateAbbr}-${selectedDistrict.district}`}
-                              {(selectedDistrict.signer?.party || selectedDistrict.targeted?.party) && (
-                                <span className="text-gray-500 font-normal"> ({selectedDistrict.signer?.party || selectedDistrict.targeted?.party})</span>
-                              )}
-                            </h3>
-                            <p className="text-sm text-gray-500">
-                              {selectedDistrict.stateAbbr}-{selectedDistrict.district}
-                              {selectedDistrict.targeted?.area && ` \u2014 ${selectedDistrict.targeted.area}`}
-                            </p>
-                            {selectedDistrict.signer && (
-                              <p className="mt-1 text-sm font-semibold text-green-600">
-                                Signed {selectedDistrict.signer.dateSigned}
-                              </p>
-                            )}
-                            {!selectedDistrict.signer && selectedDistrict.targeted && (
-                              <p className="mt-1 text-sm font-semibold text-amber-600">
-                                Not yet signed &mdash; call this rep!
-                              </p>
-                            )}
-                            {!selectedDistrict.signer && !selectedDistrict.targeted && (
-                              <p className="mt-1 text-sm font-semibold text-gray-500">
-                                Not yet signed
-                              </p>
-                            )}
-                          </div>
-                          <button
-                            onClick={() => setSelectedDistrict(null)}
-                            className="shrink-0 text-gray-400 hover:text-gray-600"
-                            aria-label="Close"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                            </svg>
-                          </button>
-                        </div>
-                        {!selectedDistrict.signer && (
-                          <CallScript
-                            repName={selectedDistrict.targeted?.name || `your representative (${selectedDistrict.stateAbbr}-${selectedDistrict.district})`}
-                            phone={selectedDistrict.targeted?.phone}
-                          />
+                <h2 className="text-xl font-semibold text-gray-900 mb-1">Signature map</h2>
+                <p className="text-sm text-gray-500 mb-1">
+                  <span className="inline-block w-3 h-3 rounded-sm bg-green-500 mr-1 align-middle" /> Signed
+                  <span className="inline-block w-3 h-3 rounded-sm bg-yellow-400 ml-3 mr-1 align-middle" /> Targeted
+                  <span className="inline-block w-3 h-3 rounded-sm bg-gray-300 ml-3 mr-1 align-middle" /> Not targeted
+                  &mdash; Click a district for details.
+                </p>
+                <p className="text-xs text-blue-600 mb-4">Don&rsquo;t know the zip code? Use the map to zoom in.</p>
+                <DistrictMap
+                  signerData={signerData}
+                  targetedReps={targetedReps}
+                  selectedDistrictKey={selectedDistrict?.key}
+                  onDistrictClick={setSelectedDistrict}
+                />
+                {selectedDistrict && (
+                  <div id="district-callout" ref={calloutRef} className="mt-4 border border-gray-200 rounded-lg bg-white p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-lg">
+                          {selectedDistrict.signer?.name || selectedDistrict.targeted?.name || `${selectedDistrict.stateAbbr}-${selectedDistrict.district}`}
+                          {(selectedDistrict.signer?.party || selectedDistrict.targeted?.party) && (
+                            <span className="text-gray-500 font-normal"> ({selectedDistrict.signer?.party || selectedDistrict.targeted?.party})</span>
+                          )}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {selectedDistrict.stateAbbr}-{selectedDistrict.district}
+                          {selectedDistrict.targeted?.area && ` \u2014 ${selectedDistrict.targeted.area}`}
+                        </p>
+                        {selectedDistrict.signer && (
+                          <p className="mt-1 text-sm font-semibold text-green-600">
+                            Signed {selectedDistrict.signer.dateSigned}
+                          </p>
+                        )}
+                        {!selectedDistrict.signer && selectedDistrict.targeted && (
+                          <p className="mt-1 text-sm font-semibold text-amber-600">
+                            Not yet signed &mdash; call this rep!
+                          </p>
+                        )}
+                        {!selectedDistrict.signer && !selectedDistrict.targeted && (
+                          <p className="mt-1 text-sm font-semibold text-gray-500">
+                            Not yet signed
+                          </p>
                         )}
                       </div>
+                      <button
+                        onClick={() => setSelectedDistrict(null)}
+                        className="shrink-0 text-gray-400 hover:text-gray-600"
+                        aria-label="Close"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    </div>
+                    {!selectedDistrict.signer && (
+                      <CallScript
+                        repName={selectedDistrict.targeted?.name || `your representative (${selectedDistrict.stateAbbr}-${selectedDistrict.district})`}
+                        phone={selectedDistrict.targeted?.phone}
+                        callScriptTemplate={callScriptTemplate}
+                        emailTemplate={emailTemplate}
+                      />
                     )}
                   </div>
                 )}
@@ -471,6 +524,22 @@ export default function ClientPage({ signerData, targetedReps, learnContent }: C
 
         </div>
       </main>
+
+      {/* Spread the word */}
+      <div className="bg-blue-700 text-white">
+        <div className="max-w-5xl mx-auto px-4 py-8 sm:py-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-lg font-semibold">Help us spread the word.</p>
+            <p className="text-blue-100 text-sm mt-1">Reach out to your network &mdash; a call from their constituent can genuinely move the needle.</p>
+          </div>
+          <button
+            onClick={() => setActiveTab('network')}
+            className="shrink-0 inline-flex items-center gap-2 bg-white text-blue-700 hover:bg-blue-50 font-semibold py-2.5 px-5 rounded-lg text-sm transition-colors"
+          >
+            Reach out to your network &rarr;
+          </button>
+        </div>
+      </div>
 
       {/* Footer */}
       <footer className="bg-gray-800 text-gray-300 py-6">

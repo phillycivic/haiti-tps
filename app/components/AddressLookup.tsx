@@ -52,6 +52,8 @@ interface AddressLookupProps {
   targetedReps?: TargetedRep[];
   onLocationFound?: (location: { lat: number; lng: number }) => void;
   onSwitchToNetwork?: () => void;
+  callScriptTemplate?: string;
+  emailTemplate?: string;
 }
 
 // Sample offsets (~2mi grid) to catch ZIPs that span multiple districts
@@ -62,7 +64,7 @@ const SAMPLE_OFFSETS = [
   [0.05, 0], [-0.05, 0], [0, 0.05], [0, -0.05],
 ];
 
-export default function AddressLookup({ signerData, geoData, targetedReps, onLocationFound, onSwitchToNetwork }: AddressLookupProps) {
+export default function AddressLookup({ signerData, geoData, targetedReps, onLocationFound, onSwitchToNetwork, callScriptTemplate, emailTemplate }: AddressLookupProps) {
   const [zip, setZip] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -236,6 +238,8 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
                       repName={r.targeted?.name || `your representative (${r.stateAbbr}-${r.district})`}
                       zip={zip}
                       phone={r.targeted?.phone}
+                      callScriptTemplate={callScriptTemplate}
+                      emailTemplate={emailTemplate}
                     />
                   </>
                 )}

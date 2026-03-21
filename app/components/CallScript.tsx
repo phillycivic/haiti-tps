@@ -8,32 +8,53 @@ interface CallScriptProps {
   state?: string;
   zip?: string;
   phone?: string;
+  callScriptTemplate?: string;
+  emailTemplate?: string;
 }
 
-export default function CallScript({ repName, city, state, zip, phone }: CallScriptProps) {
+function applyVars(template: string, vars: Record<string, string>): string {
+  return Object.entries(vars).reduce((t, [k, v]) => t.replaceAll(k, v), template);
+}
+
+export default function CallScript({ repName, city, state, zip, phone, callScriptTemplate, emailTemplate }: CallScriptProps) {
   const [copiedScript, setCopiedScript] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [showEmailText, setShowEmailText] = useState(false);
 
   const locationParts = [city, state, zip].filter(Boolean).join(', ');
-  const script = `My name is ______, and I live in ${locationParts || '[your city, state, zip]'}. I am calling to urge Representative ${repName} to sign the discharge petition for House Resolution 965 so the House can vote on H.R. 1689 to designate Haiti for Temporary Protected Status. Time is of the essence, and I respectfully ask Representative ${repName} to sign as soon as possible. Thank you.`;
 
-  const defaultEmailBody = [
-    'Hey,',
-    '',
-    'I wanted to reach out about something I\'ve been following — the Supreme Court is about to rule on whether to strip Temporary Protected Status from 350,000 Haitians living in the U.S. A decision is expected by end of June, and it could mean deportation orders for hundreds of thousands of people.',
-    '',
-    `There's a discharge petition in the House that needs 218 signatures to force a vote on legislation that would protect them. ${repName} hasn't signed yet — and a phone call from a constituent can genuinely move the needle on this.`,
-    '',
-    'Would you be willing to make a quick 2-minute call? Here\'s a script you can use:',
-    '',
-    `"${script}"`,
-    '',
-    phone ? `${repName}'s office: ${phone}` : 'House Switchboard: (202) 224-3121 — ask to be connected to your representative',
-    '',
-    'I know it feels small, but these calls really do matter. Thanks for considering it.',
-  ].join('\n');
-  const emailBody = defaultEmailBody; // keep variable for any remaining refs
+  const script = callScriptTemplate
+    ? applyVars(callScriptTemplate, {
+        '[Rep Name]': repName,
+        '[your city, state, zip]': locationParts || '[your city, state, zip]',
+      })
+    : `My name is ______, and I live in ${locationParts || '[your city, state, zip]'}. I am calling to urge Representative ${repName} to sign the discharge petition for House Resolution 965 so the House can vote on H.R. 1689 to designate Haiti for Temporary Protected Status. Time is of the essence, and I respectfully ask Representative ${repName} to sign as soon as possible. Thank you.`;
+
+  const phoneLineText = phone
+    ? `${repName}'s office: ${phone}`
+    : 'House Switchboard: (202) 224-3121 — ask to be connected to your representative';
+
+  const defaultEmailBody = emailTemplate
+    ? applyVars(emailTemplate, {
+        '[Rep Name]': repName,
+        '[CALL SCRIPT]': script,
+        '[PHONE LINE]': phoneLineText,
+      })
+    : [
+        'Hey,',
+        '',
+        'I wanted to reach out about something I\'ve been following — the Supreme Court is about to rule on whether to strip Temporary Protected Status from 350,000 Haitians living in the U.S. A decision is expected by end of June, and it could mean deportation orders for hundreds of thousands of people.',
+        '',
+        `There's a discharge petition in the House that needs 218 signatures to force a vote on legislation that would protect them. ${repName} hasn't signed yet — and a phone call from a constituent can genuinely move the needle on this.`,
+        '',
+        'Would you be willing to make a quick 2-minute call? Here\'s a script you can use:',
+        '',
+        `"${script}"`,
+        '',
+        phoneLineText,
+        '',
+        'I know it feels small, but these calls really do matter. Thanks for considering it.',
+      ].join('\n');
 
   const emailSubject = `Please call ${repName} to protect TPS for Haitians`;
   const [editableEmail, setEditableEmail] = useState(`Subject: ${emailSubject}\n\n${defaultEmailBody}`);

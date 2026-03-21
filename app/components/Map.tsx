@@ -126,9 +126,9 @@ export default function DistrictMap({ signerData, targetedReps, userLocation, in
     else if (targeted) fillColor = '#facc15'; // yellow — targeted
     return {
       fillColor,
-      weight: 0.5,
-      opacity: 0.8,
-      color: '#666',
+      weight: 1.5,
+      opacity: 1,
+      color: '#374151',
       fillOpacity: 0.5,
     };
   };

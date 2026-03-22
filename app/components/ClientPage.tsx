@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useRouter, useSearchParams } from 'next/navigation';
 import type { FeatureCollection, Feature, Polygon, MultiPolygon } from 'geojson';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { point } from '@turf/helpers';
@@ -31,30 +32,46 @@ interface SignerData {
   signers: Signer[];
 }
 
-interface TargetedRep {
+interface HouseRep {
   name: string;
   party: string;
   stateDistrict: string;
   phone: string;
   area: string;
   searchTerms: string;
+  targeted: boolean;
 }
 
 interface ClientPageProps {
   signerData: SignerData;
-  targetedReps: TargetedRep[];
+  allReps: HouseRep[];
+  targetedReps: HouseRep[];
   learnContent: string;
   callScriptTemplate?: string;
   emailTemplate?: string;
 }
 
-export default function ClientPage({ signerData, targetedReps, learnContent, callScriptTemplate, emailTemplate }: ClientPageProps) {
+export default function ClientPage({ signerData, allReps, targetedReps, learnContent, callScriptTemplate, emailTemplate }: ClientPageProps) {
   const [geoData, setGeoData] = useState<FeatureCollection | null>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [browserLocation, setBrowserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictClickInfo | null>(null);
-  const [activeTab, setActiveTab] = useState<'you' | 'network' | 'learn'>('you');
+  const [networkSelectedDistrict, setNetworkSelectedDistrict] = useState<DistrictClickInfo | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState<'you' | 'network' | 'learn'>(
+    tabParam === 'network' || tabParam === 'learn' ? tabParam : 'you'
+  );
+
+  const switchTab = useCallback((tab: 'you' | 'network' | 'learn') => {
+    setActiveTab(tab);
+    setSelectedDistrict(null);
+    setNetworkSelectedDistrict(null);
+    router.replace(`?tab=${tab}`, { scroll: false });
+  }, [router]);
   const calloutRef = useRef<HTMLDivElement>(null);
+  const networkCalloutRef = useRef<HTMLDivElement>(null);
   const autoSelectedRef = useRef(false);
 
   useEffect(() => {
@@ -74,9 +91,9 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
     () => new Map(signerData.signers.map((s) => [s.stateDistrict, s])),
     [signerData.signers]
   );
-  const targetedByDistrict = useMemo(
-    () => new Map(targetedReps.map((t) => [t.stateDistrict, t])),
-    [targetedReps]
+  const repByDistrict = useMemo(
+    () => new Map(allReps.map((r) => [r.stateDistrict, r])),
+    [allReps]
   );
 
   const findDistrict = useCallback(
@@ -106,9 +123,9 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
       stateAbbr: dist.stateAbbr,
       district: dist.district,
       signer: signerByDistrict.get(key),
-      targeted: targetedByDistrict.get(key),
+      targeted: repByDistrict.get(key),
     };
-  }, [browserLocation, geoData, findDistrict, signerByDistrict, targetedByDistrict]);
+  }, [browserLocation, geoData, findDistrict, signerByDistrict, repByDistrict]);
 
   // Auto-select on map when geolocation resolves
   useEffect(() => {
@@ -130,42 +147,48 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
     autoSelectedRef.current = false;
   }, [selectedDistrict]);
 
+  useEffect(() => {
+    if (networkSelectedDistrict && networkCalloutRef.current) {
+      networkCalloutRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [networkSelectedDistrict]);
+
   const repName = autoDistrict?.signer?.name || autoDistrict?.targeted?.name;
   const repParty = autoDistrict?.signer?.party || autoDistrict?.targeted?.party;
 
-  // Shared district callout for map clicks
-  const districtCallout = selectedDistrict && (
-    <div id="district-callout" ref={calloutRef} className="mt-4 border border-gray-200 rounded-lg bg-white p-4">
+  // District callout for map clicks
+  const renderCallout = (district: DistrictClickInfo, onClose: () => void, ref: React.RefObject<HTMLDivElement | null>) => (
+    <div id="district-callout" ref={ref} className="mt-4 border border-gray-200 rounded-lg bg-white p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="font-semibold text-gray-900 text-lg">
-            {selectedDistrict.signer?.name || selectedDistrict.targeted?.name || `${selectedDistrict.stateAbbr}-${selectedDistrict.district}`}
-            {(selectedDistrict.signer?.party || selectedDistrict.targeted?.party) && (
-              <span className="text-gray-500 font-normal"> ({selectedDistrict.signer?.party || selectedDistrict.targeted?.party})</span>
+            {district.signer?.name || district.targeted?.name || `${district.stateAbbr}-${district.district}`}
+            {(district.signer?.party || district.targeted?.party) && (
+              <span className="text-gray-500 font-normal"> ({district.signer?.party || district.targeted?.party})</span>
             )}
           </h3>
           <p className="text-sm text-gray-500">
-            {selectedDistrict.stateAbbr}-{selectedDistrict.district}
-            {selectedDistrict.targeted?.area && ` \u2014 ${selectedDistrict.targeted.area}`}
+            {district.stateAbbr}-{district.district}
+            {district.targeted?.area && ` \u2014 ${district.targeted.area}`}
           </p>
-          {selectedDistrict.signer && (
+          {district.signer && (
             <p className="mt-1 text-sm font-semibold text-green-600">
-              Signed {selectedDistrict.signer.dateSigned}
+              Signed {district.signer.dateSigned}
             </p>
           )}
-          {!selectedDistrict.signer && selectedDistrict.targeted && (
+          {!district.signer && district.targeted && (
             <p className="mt-1 text-sm font-semibold text-amber-600">
-              Not yet signed &mdash; call this rep!
+              Not yet signed &mdash; most likely to sign &mdash; call this rep!
             </p>
           )}
-          {!selectedDistrict.signer && !selectedDistrict.targeted && (
+          {!district.signer && !district.targeted && (
             <p className="mt-1 text-sm font-semibold text-gray-500">
               Not yet signed
             </p>
           )}
         </div>
         <button
-          onClick={() => setSelectedDistrict(null)}
+          onClick={onClose}
           className="shrink-0 text-gray-400 hover:text-gray-600"
           aria-label="Close"
         >
@@ -174,10 +197,10 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
           </svg>
         </button>
       </div>
-      {!selectedDistrict.signer && (
+      {!district.signer && (
         <CallScript
-          repName={selectedDistrict.targeted?.name || `your representative (${selectedDistrict.stateAbbr}-${selectedDistrict.district})`}
-          phone={selectedDistrict.targeted?.phone}
+          repName={district.targeted?.name || `your representative (${district.stateAbbr}-${district.district})`}
+          phone={district.targeted?.phone}
           callScriptTemplate={callScriptTemplate}
           emailTemplate={emailTemplate}
         />
@@ -220,7 +243,7 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
           {/* Tabs */}
           <div className="flex rounded-xl overflow-hidden border border-gray-200 mb-6 shadow-sm">
             <button
-              onClick={() => setActiveTab('you')}
+              onClick={() => switchTab('you')}
               className={`flex-1 py-3.5 px-4 text-sm font-bold transition-all ${
                 activeTab === 'you'
                   ? 'bg-gradient-to-r from-brand to-brand-mid text-white shadow-inner'
@@ -230,7 +253,7 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
               For You
             </button>
             <button
-              onClick={() => setActiveTab('network')}
+              onClick={() => switchTab('network')}
               className={`flex-1 py-3.5 px-4 text-sm font-bold transition-all border-l border-gray-200 ${
                 activeTab === 'network'
                   ? 'bg-gradient-to-r from-brand to-brand-mid text-white shadow-inner'
@@ -240,7 +263,7 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
               For Your Network
             </button>
             <button
-              onClick={() => setActiveTab('learn')}
+              onClick={() => switchTab('learn')}
               className={`flex-1 py-3.5 px-4 text-sm font-bold transition-all border-l border-gray-200 ${
                 activeTab === 'learn'
                   ? 'bg-gradient-to-r from-brand to-brand-mid text-white shadow-inner'
@@ -281,7 +304,7 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
                           Your rep already signed! Switch to the &ldquo;For Your Network&rdquo; tab to find friends whose reps haven&rsquo;t yet.
                         </p>
                         <button
-                          onClick={() => setActiveTab('network')}
+                          onClick={() => switchTab('network')}
                           className="mt-3 inline-flex items-center gap-2 bg-gradient-to-r from-action to-action-end hover:from-action-dark hover:to-action-end-dark text-white font-semibold py-2.5 px-5 rounded-lg text-sm transition-all shadow-sm hover:shadow-md"
                         >
                           Help us spread the word &mdash; reach out to your network &rarr;
@@ -316,7 +339,7 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
                   <p className="text-sm text-gray-500 mb-4">
                     Enter your ZIP code to find your congressional district and see if your rep has signed.
                   </p>
-                  <AddressLookup signerData={signerData} geoData={geoData} targetedReps={targetedReps} onSwitchToNetwork={() => setActiveTab('network')} callScriptTemplate={callScriptTemplate} emailTemplate={emailTemplate} />
+                  <AddressLookup signerData={signerData} geoData={geoData} targetedReps={allReps} onSwitchToNetwork={() => switchTab('network')} callScriptTemplate={callScriptTemplate} emailTemplate={emailTemplate} />
                 </div>
               )}
 
@@ -325,19 +348,19 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
                 <h2 className="text-xl font-semibold text-gray-900 mb-1">Signature map</h2>
                 <p className="text-sm text-gray-500 mb-4">
                   <span className="inline-block w-3 h-3 rounded-sm bg-green-500 mr-1 align-middle" /> Signed
-                  <span className="inline-block w-3 h-3 rounded-sm bg-yellow-400 ml-3 mr-1 align-middle" /> Targeted
-                  <span className="inline-block w-3 h-3 rounded-sm bg-gray-300 ml-3 mr-1 align-middle" /> Not targeted
+                  <span className="inline-block w-3 h-3 rounded-sm bg-yellow-400 ml-3 mr-1 align-middle" /> Most likely to sign
+                  <span className="inline-block w-3 h-3 rounded-sm bg-gray-300 ml-3 mr-1 align-middle" /> Not yet targeted
                   &mdash; Click a district for details.
                 </p>
                 <DistrictMap
                   signerData={signerData}
-                  targetedReps={targetedReps}
+                  allReps={allReps}
                   userLocation={userLocation || browserLocation}
                   initialZoom={browserLocation && !userLocation ? 7 : undefined}
                   selectedDistrictKey={selectedDistrict?.key}
                   onDistrictClick={setSelectedDistrict}
                 />
-                {districtCallout}
+                {selectedDistrict && renderCallout(selectedDistrict, () => setSelectedDistrict(null), calloutRef)}
               </div>
             </div>
           )}
@@ -354,7 +377,7 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
                 <p className="text-sm text-gray-500 mb-4">
                   Enter a friend&rsquo;s ZIP to see if their rep has signed &mdash; and get a call script to forward to them.
                 </p>
-                <AddressLookup signerData={signerData} geoData={geoData} targetedReps={targetedReps} callScriptTemplate={callScriptTemplate} emailTemplate={emailTemplate} />
+                <AddressLookup signerData={signerData} geoData={geoData} targetedReps={allReps} callScriptTemplate={callScriptTemplate} emailTemplate={emailTemplate} />
               </div>
 
               {/* Key districts */}
@@ -373,67 +396,24 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
                 <h2 className="text-xl font-semibold text-gray-900 mb-1">Signature map</h2>
                 <p className="text-sm text-gray-500 mb-1">
                   <span className="inline-block w-3 h-3 rounded-sm bg-green-500 mr-1 align-middle" /> Signed
-                  <span className="inline-block w-3 h-3 rounded-sm bg-yellow-400 ml-3 mr-1 align-middle" /> Targeted
-                  <span className="inline-block w-3 h-3 rounded-sm bg-gray-300 ml-3 mr-1 align-middle" /> Not targeted
+                  <span className="inline-block w-3 h-3 rounded-sm bg-yellow-400 ml-3 mr-1 align-middle" /> Most likely to sign
+                  <span className="inline-block w-3 h-3 rounded-sm bg-gray-300 ml-3 mr-1 align-middle" /> Not yet targeted
                   &mdash; Click a district for details.
                 </p>
                 <p className="text-xs text-link mb-4">Don&rsquo;t know the zip code? Use the map to zoom in.</p>
                 <DistrictMap
                   signerData={signerData}
-                  targetedReps={targetedReps}
-                  selectedDistrictKey={selectedDistrict?.key}
-                  onDistrictClick={setSelectedDistrict}
+                  allReps={allReps}
+                  selectedDistrictKey={networkSelectedDistrict?.key}
+                  onDistrictClick={setNetworkSelectedDistrict}
                 />
-                {districtCallout}
+                {networkSelectedDistrict && renderCallout(networkSelectedDistrict, () => setNetworkSelectedDistrict(null), networkCalloutRef)}
               </div>
             </div>
           )}
           {/* -- LEARN ABOUT TPS -- */}
           {activeTab === 'learn' && (
             <div className="space-y-6 pb-6 sm:pb-8">
-
-              {/* How the legislation works */}
-              <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 sm:p-7">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">How the legislation works</h2>
-                <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
-                  <div className="flex gap-3">
-                    <span className="shrink-0 w-8 h-8 rounded-full bg-brand-tint text-brand font-bold flex items-center justify-center text-sm">1</span>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        <a href="https://www.uscis.gov/humanitarian/temporary-protected-status" target="_blank" rel="noopener noreferrer" className="text-link hover:underline">Temporary Protected Status (TPS)</a>
-                      </h3>
-                      <p>A humanitarian protection established by Congress in 1990 for people from countries experiencing armed conflict, natural disasters, or other extraordinary conditions. It allows people already in the U.S. to live and work legally &mdash; it does not provide permanent residency or citizenship. Over 350,000 Haitians currently live under TPS.</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-3">
-                    <span className="shrink-0 w-8 h-8 rounded-full bg-brand-tint text-brand font-bold flex items-center justify-center text-sm">2</span>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        <a href="https://www.congress.gov/bill/119th-congress/house-bill/1689" target="_blank" rel="noopener noreferrer" className="text-link hover:underline">H.R. 1689</a>{' '}&mdash; The Bill
-                      </h3>
-                      <p>The legislation that would require the Secretary of Homeland Security to designate Haiti for TPS. If it passes the House, passes the Senate, and is signed by the President, it becomes law.</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-3">
-                    <span className="shrink-0 w-8 h-8 rounded-full bg-brand-tint text-brand font-bold flex items-center justify-center text-sm">3</span>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        <a href="https://www.congress.gov/bill/119th-congress/house-resolution/965" target="_blank" rel="noopener noreferrer" className="text-link hover:underline">H.Res. 965</a>{' '}&mdash; The Resolution
-                      </h3>
-                      <p>A procedural resolution that sets the rules for debating H.R. 1689. It doesn&rsquo;t grant TPS itself &mdash; it clears the way for the House to vote on the bill that would.</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-3">
-                    <span className="shrink-0 w-8 h-8 rounded-full bg-brand-tint text-brand font-bold flex items-center justify-center text-sm">4</span>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        <a href="https://clerk.house.gov/DischargePetition/2026012215" target="_blank" rel="noopener noreferrer" className="text-link hover:underline">The Discharge Petition</a>{' '}&mdash; Why We Need 218 Signatures
-                      </h3>
-                      <p>A procedural tool to force H.Res. 965 out of committee and onto the House floor. Once 218 members sign, the House votes on the resolution, and if it passes, immediately proceeds to debate and vote on H.R. 1689.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
               {/* Live Google Doc content */}
               {learnContent ? (
@@ -456,6 +436,7 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
                       [&_th]:border [&_th]:border-gray-300 [&_th]:bg-gray-100 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:font-semibold
                       [&_td]:border [&_td]:border-gray-300 [&_td]:px-3 [&_td]:py-2 [&_td]:align-top
                       [&_tr:nth-child(even)_td]:bg-gray-50
+                      [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-lg [&_img]:my-4
                     "
                     dangerouslySetInnerHTML={{ __html: learnContent }}
                   />
@@ -487,7 +468,7 @@ export default function ClientPage({ signerData, targetedReps, learnContent, cal
             <p className="text-brand-light text-sm sm:text-base mt-1.5">Reach out to your network &mdash; a call from their constituent can genuinely move the needle.</p>
           </div>
           <button
-            onClick={() => { setActiveTab('network'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            onClick={() => { switchTab('network'); window.scrollTo({ top: 0, behavior: 'smooth' }); } }
             className="shrink-0 inline-flex items-center gap-2 bg-white text-brand hover:bg-brand-tint font-bold py-3 px-6 rounded-xl text-sm transition-all shadow-lg hover:shadow-xl"
           >
             Reach out to your network &rarr;

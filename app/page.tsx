@@ -1,27 +1,37 @@
+import { Suspense } from 'react';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import signerData from '../data/signers.json';
 import ClientPage from './components/ClientPage';
 
-interface TargetedRep {
+interface HouseRep {
   name: string;
   party: string;
   stateDistrict: string;
   phone: string;
   area: string;
   searchTerms: string;
+  targeted: boolean;
 }
 
-function loadTargetedReps(): TargetedRep[] {
-  const csv = readFileSync(join(process.cwd(), 'data', 'targeted.csv'), 'utf8');
+function loadHouseReps(): HouseRep[] {
+  const csv = readFileSync(join(process.cwd(), 'data', 'house_reps.csv'), 'utf8');
   return csv
     .trim()
     .split('\n')
     .slice(1)
     .filter(Boolean)
     .map(line => {
-      const [name, party, , , stateDistrict, phone, area, searchTerms] = line.split(',');
-      return { name, party, stateDistrict, phone, area: area || '', searchTerms: searchTerms || '' };
+      const [name, party, , , stateDistrict, phone, area, searchTerms, targeted] = line.replace(/\r$/, '').split(',');
+      return {
+        name,
+        party,
+        stateDistrict,
+        phone,
+        area: area || '',
+        searchTerms: searchTerms || '',
+        targeted: targeted === 'Y',
+      };
     });
 }
 
@@ -56,6 +66,15 @@ function cleanGoogleDocHtml(html: string): string {
     return hrefMatch ? `<a href="${hrefMatch[1]}" target="_blank" rel="noopener noreferrer">` : '<a>';
   });
 
+  // Keep src and alt on <img> tags, strip everything else
+  body = body.replace(/<img [^>]*>/gi, (match) => {
+    const srcMatch = match.match(/src="([^"]*)"/);
+    const altMatch = match.match(/alt="([^"]*)"/);
+    if (!srcMatch) return '';
+    const alt = altMatch ? ` alt="${altMatch[1]}"` : '';
+    return `<img src="${srcMatch[1]}"${alt}>`;
+  });
+
   // Convert spans to semantic tags using CSS class map (Google Docs uses classes, not inline styles)
   body = body.replace(/<span([^>]*)>/gi, (_, attrs) => {
     const tags = new Set<string>();
@@ -83,6 +102,9 @@ function cleanGoogleDocHtml(html: string): string {
 
   // Remove empty paragraphs
   body = body.replace(/<p>\s*(<br\s*\/?>\s*)*<\/p>/gi, '');
+
+  // Strip the first h1 (Google Docs exports the document title as h1)
+  body = body.replace(/<h1>[^<]*<\/h1>/, '');
 
   return body.trim();
 }
@@ -115,19 +137,23 @@ async function fetchDocTab(tab: string): Promise<string> {
 }
 
 export default async function Home() {
-  const targetedReps = loadTargetedReps();
+  const allReps = loadHouseReps();
+  const targetedReps = allReps.filter(r => r.targeted);
   const [learnContent, callScriptTemplate, emailTemplate] = await Promise.all([
     fetchLearnContent(),
     fetchDocTab('t.rzwkn49ttbko'),
     fetchDocTab('t.s05b9d46sd46'),
   ]);
   return (
-    <ClientPage
-      signerData={signerData}
-      targetedReps={targetedReps}
-      learnContent={learnContent}
-      callScriptTemplate={callScriptTemplate}
-      emailTemplate={emailTemplate}
-    />
+    <Suspense>
+      <ClientPage
+        signerData={signerData}
+        allReps={allReps}
+        targetedReps={targetedReps}
+        learnContent={learnContent}
+        callScriptTemplate={callScriptTemplate}
+        emailTemplate={emailTemplate}
+      />
+    </Suspense>
   );
 }

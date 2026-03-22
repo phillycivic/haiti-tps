@@ -37,6 +37,7 @@ interface TargetedRep {
   stateDistrict: string;
   phone: string;
   area: string;
+  targeted?: boolean;
 }
 
 function FlyToLocation({ lat, lng, zoom = 9 }: { lat: number; lng: number; zoom?: number }) {
@@ -64,7 +65,7 @@ export interface DistrictClickInfo {
 
 interface MapProps {
   signerData: SignerData;
-  targetedReps: TargetedRep[];
+  allReps: TargetedRep[];
   userLocation?: { lat: number; lng: number } | null;
   initialZoom?: number;
   selectedDistrictKey?: string | null;
@@ -87,7 +88,7 @@ function OpenDistrictPopup({ districtKey, layersRef }: { districtKey: string; la
   return null;
 }
 
-export default function DistrictMap({ signerData, targetedReps, userLocation, initialZoom, selectedDistrictKey, onDistrictClick }: MapProps) {
+export default function DistrictMap({ signerData, allReps, userLocation, initialZoom, selectedDistrictKey, onDistrictClick }: MapProps) {
   const [geoData, setGeoData] = useState<FeatureCollection | null>(null);
   const layersRef = useRef<globalThis.Map<string, Layer>>(new globalThis.Map());
 
@@ -101,10 +102,10 @@ export default function DistrictMap({ signerData, targetedReps, userLocation, in
     signerData.signers.map((s) => s.stateDistrict)
   );
 
-  const targetedByDistrict: globalThis.Map<string, TargetedRep> = new globalThis.Map(
-    targetedReps.map((t): [string, TargetedRep] => [t.stateDistrict, t])
+  const repByDistrict: globalThis.Map<string, TargetedRep> = new globalThis.Map(
+    allReps.map((r): [string, TargetedRep] => [r.stateDistrict, r])
   );
-  const targetedSet = new Set(targetedReps.map(t => t.stateDistrict));
+  const targetedSet = new Set(allReps.filter(r => r.targeted).map(r => r.stateDistrict));
 
   const signerByDistrict: globalThis.Map<string, Signer> = new globalThis.Map(
     signerData.signers.map((s): [string, Signer] => [s.stateDistrict, s])
@@ -149,21 +150,15 @@ export default function DistrictMap({ signerData, targetedReps, userLocation, in
           <span style="color: #16a34a; font-weight: 600">Signed ${signer.dateSigned}</span>
         </div>
       `;
-    } else if (targeted) {
-      const rep = targetedByDistrict.get(key);
+    } else {
+      const rep = repByDistrict.get(key);
+      const statusColor = targeted ? '#ca8a04' : '#6b7280';
+      const statusText = targeted ? 'Most likely to sign &mdash; call this rep!' : 'Not yet signed';
       popupContent = `
         <div style="min-width: 180px">
           <strong>${rep?.name || stateAbbr + '-' + district}${rep?.party ? ' (' + rep.party + ')' : ''}</strong><br/>
           ${stateAbbr}-${district}${rep?.area ? ' &mdash; ' + rep.area : ''}<br/>
-          <span style="color: #ca8a04; font-weight: 600">Not yet signed &mdash; call this rep!</span><br/>
-          <a href="#district-callout" onclick="event.preventDefault();document.getElementById('district-callout')?.scrollIntoView({behavior:'smooth',block:'nearest'})" style="color: #2563eb; font-size: 0.85em; text-decoration: underline; cursor: pointer">&#x25BC; See below for call script</a>
-        </div>
-      `;
-    } else {
-      popupContent = `
-        <div style="min-width: 160px">
-          <strong>${stateAbbr}-${district}</strong><br/>
-          <span style="color: #6b7280; font-weight: 600">Not yet signed</span><br/>
+          <span style="color: ${statusColor}; font-weight: 600">${statusText}</span><br/>
           <a href="#district-callout" onclick="event.preventDefault();document.getElementById('district-callout')?.scrollIntoView({behavior:'smooth',block:'nearest'})" style="color: #2563eb; font-size: 0.85em; text-decoration: underline; cursor: pointer">&#x25BC; See below for call script</a>
         </div>
       `;
@@ -177,7 +172,7 @@ export default function DistrictMap({ signerData, targetedReps, userLocation, in
         stateAbbr,
         district,
         signer: signerByDistrict.get(key),
-        targeted: targetedByDistrict.get(key),
+        targeted: repByDistrict.get(key),
       });
     });
   };

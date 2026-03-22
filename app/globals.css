@@ -47,10 +47,10 @@
   --color-link-on-dark:       #5eead4; /* teal-300 */
   --color-link-on-dark-hover: #99f6e4; /* teal-200 */
 
-  /* Progress bar gradient — warm sweep */
-  --color-bar-from: #2dd4bf; /* teal-400 */
-  --color-bar-via:  #fb923c; /* orange-400 */
-  --color-bar-to:   #fb7185; /* rose-400 */
+  /* Progress bar gradient — amber → lime → green (more = better) */
+  --color-bar-from: #fbbf24; /* amber-400 */
+  --color-bar-via:  #84cc16; /* lime-400 */
+  --color-bar-to:   #22c55e; /* green-500 */
 
   /* Page background */
   --color-page-bg: #f8faf9;

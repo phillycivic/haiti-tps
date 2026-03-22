@@ -74,7 +74,7 @@ export default function TargetedRepList({ targetedReps }: TargetedRepListProps) 
       />
       {filtered.length === 0 ? (
         <p className="text-gray-500 text-sm text-center py-4">
-          No targeted reps found for &ldquo;{query}&rdquo;
+          No reps most likely to sign found for &ldquo;{query}&rdquo;
         </p>
       ) : (
         <div className="relative">
@@ -125,7 +125,7 @@ export default function TargetedRepList({ targetedReps }: TargetedRepListProps) 
         </div>
       )}
       <p className="text-xs text-gray-400 mt-3 text-center">
-        {filtered.length} of {targetedReps.length} targeted representatives
+        {filtered.length} of {targetedReps.length} representatives most likely to sign
       </p>
     </div>
   );

@@ -17,7 +17,6 @@ function applyVars(template: string, vars: Record<string, string>): string {
 }
 
 export default function CallScript({ repName, city, state, zip, phone, callScriptTemplate, emailTemplate }: CallScriptProps) {
-  const [copiedScript, setCopiedScript] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [showEmailText, setShowEmailText] = useState(false);
 
@@ -61,12 +60,6 @@ export default function CallScript({ repName, city, state, zip, phone, callScrip
 
   const emailHref = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(editableEmail.replace(/^Subject:[^\n]*\n\n?/, ''))}`;
 
-  const handleCopyScript = async () => {
-    await navigator.clipboard.writeText(script);
-    setCopiedScript(true);
-    setTimeout(() => setCopiedScript(false), 2000);
-  };
-
   const handleCopyEmail = async () => {
     await navigator.clipboard.writeText(editableEmail);
     setCopiedEmail(true);
@@ -77,53 +70,20 @@ export default function CallScript({ repName, city, state, zip, phone, callScrip
     <div className="mt-4 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/80 rounded-xl p-5 shadow-sm">
       <div className="flex items-start justify-between mb-2">
         <h3 className="font-bold text-gray-900 text-base">Your Call Script</h3>
-        <p className="text-right font-bold text-gray-800 text-lg">
-          {phone ? (
-            <a href={`tel:${phone.replace(/[^0-9]/g, '')}`} className="hover:text-cta transition-colors">
-              {phone}
-            </a>
-          ) : (
-            <a href="tel:2022243121" className="hover:text-cta transition-colors">
-              (202) 224-3121
-            </a>
-          )}
-        </p>
       </div>
       <p className="text-gray-700 text-sm leading-relaxed italic mb-4 bg-white/60 rounded-lg p-3 border border-amber-100">
         &ldquo;{script}&rdquo;
       </p>
-      <div className="flex flex-col sm:flex-row gap-2">
-        <a
-          href={`tel:${phone ? phone.replace(/[^0-9]/g, '') : '2022243121'}`}
-          className="flex-1 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cta to-cta-end hover:from-cta-dark hover:to-cta-end-dark text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md hover:shadow-lg"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-          </svg>
-          {phone ? `Call ${repName}` : 'Call the House Switchboard'}
-        </a>
-        <button
-          onClick={handleCopyScript}
-          className="flex-1 inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3.5 px-4 rounded-xl transition-all border border-gray-200 shadow-sm hover:shadow-md"
-        >
-          {copiedScript ? (
-            <>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              Copied!
-            </>
-          ) : (
-            <>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
-              </svg>
-              Copy Script
-            </>
-          )}
-        </button>
-      </div>
+      <a
+        href={`tel:${phone ? phone.replace(/[^0-9]/g, '') : '2022243121'}`}
+        className="w-full inline-flex items-center justify-center gap-3 bg-gradient-to-r from-cta to-cta-end hover:from-cta-dark hover:to-cta-end-dark text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md hover:shadow-lg"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+        </svg>
+        <span className="opacity-75 font-normal text-sm">{phone ? `Call ${repName}` : 'Call the House Switchboard'}</span>
+        <span className="text-xl tracking-wide">{phone || '(202) 224-3121'}</span>
+      </a>
       <div className="mt-2 mb-3" />
       <div className="border-t border-amber-200/60 pt-4 mt-1">
         <p className="text-xs text-gray-600 mb-2 font-medium">Forward to a friend to call their rep:</p>

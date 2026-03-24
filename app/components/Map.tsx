@@ -63,6 +63,18 @@ export interface DistrictClickInfo {
   targeted?: TargetedRep;
 }
 
+function FitOverlayBounds({ geojson }: { geojson: GeoJSON.GeoJsonObject }) {
+  const map = useMap();
+  useEffect(() => {
+    const layer = L.geoJSON(geojson);
+    const bounds = layer.getBounds();
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12, duration: 1.5 });
+    }
+  }, [map, geojson]);
+  return null;
+}
+
 interface MapProps {
   signerData: SignerData;
   allReps: TargetedRep[];
@@ -70,6 +82,7 @@ interface MapProps {
   initialZoom?: number;
   selectedDistrictKey?: string | null;
   onDistrictClick?: (info: DistrictClickInfo) => void;
+  searchOverlay?: GeoJSON.GeoJsonObject | null;
 }
 
 function OpenDistrictPopup({ districtKey, layersRef }: { districtKey: string; layersRef: React.RefObject<globalThis.Map<string, Layer>> }) {
@@ -88,7 +101,7 @@ function OpenDistrictPopup({ districtKey, layersRef }: { districtKey: string; la
   return null;
 }
 
-export default function DistrictMap({ signerData, allReps, userLocation, initialZoom, selectedDistrictKey, onDistrictClick }: MapProps) {
+export default function DistrictMap({ signerData, allReps, userLocation, initialZoom, selectedDistrictKey, onDistrictClick, searchOverlay }: MapProps) {
   const [geoData, setGeoData] = useState<FeatureCollection | null>(null);
   const layersRef = useRef<globalThis.Map<string, Layer>>(new globalThis.Map());
 
@@ -199,6 +212,24 @@ export default function DistrictMap({ signerData, allReps, userLocation, initial
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      {searchOverlay && (
+        <>
+          <GeoJSON
+            key={JSON.stringify(searchOverlay).slice(0, 100)}
+            data={searchOverlay as FeatureCollection}
+            style={() => ({
+              fillColor: '#3b82f6',
+              fillOpacity: 0.12,
+              color: '#2563eb',
+              weight: 3,
+              dashArray: '8 5',
+              interactive: false,
+            })}
+            interactive={false}
+          />
+          <FitOverlayBounds geojson={searchOverlay} />
+        </>
+      )}
       <GeoJSON
         data={geoData}
         style={style}

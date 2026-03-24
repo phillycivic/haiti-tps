@@ -8,6 +8,7 @@ import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { point } from '@turf/helpers';
 import ProgressBar from './ProgressBar';
 import AddressLookup from './AddressLookup';
+import RepList from './RepList';
 import TargetedRepList from './TargetedRepList';
 import CallScript from './CallScript';
 import { FIPS_TO_STATE } from './fips';
@@ -57,6 +58,8 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
   const [browserLocation, setBrowserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictClickInfo | null>(null);
   const [networkSelectedDistrict, setNetworkSelectedDistrict] = useState<DistrictClickInfo | null>(null);
+  const [networkSearchOverlay, setNetworkSearchOverlay] = useState<GeoJSON.GeoJsonObject | null>(null);
+  const [showTargetedList, setShowTargetedList] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
@@ -325,7 +328,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                     </>
                   )}
                   <p className="mt-3 text-xs text-gray-400">
-                    Not your district? Look up by ZIP below.
+                    Not your district? Search below.
                   </p>
                 </div>
               )}
@@ -334,10 +337,10 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
               {!autoDistrict && (
                 <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 sm:p-7">
                   <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                    Look up your rep by ZIP
+                    Look up your rep
                   </h2>
                   <p className="text-sm text-gray-500 mb-4">
-                    Enter your ZIP code to find your congressional district and see if your rep has signed.
+                    Enter a city, ZIP code, or region to find your congressional district and see if your rep has signed.
                   </p>
                   <AddressLookup signerData={signerData} geoData={geoData} targetedReps={allReps} onSwitchToNetwork={() => switchTab('network')} callScriptTemplate={callScriptTemplate} emailTemplate={emailTemplate} />
                 </div>
@@ -369,45 +372,76 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
           {activeTab === 'network' && (
             <div className="space-y-6">
 
-              {/* ZIP lookup for a friend */}
+              {/* Location search */}
               <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 sm:p-7">
                 <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                  Check a friend&rsquo;s rep
+                  Find a rep in your network
                 </h2>
                 <p className="text-sm text-gray-500 mb-4">
-                  Enter a friend&rsquo;s ZIP to see if their rep has signed &mdash; and get a call script to forward to them.
+                  Search by city, state, ZIP, or region. If you know someone in one of these areas, forward them the call script &mdash; their call could be the one that gets us to 218.
                 </p>
-                <AddressLookup signerData={signerData} geoData={geoData} targetedReps={allReps} callScriptTemplate={callScriptTemplate} emailTemplate={emailTemplate} />
-              </div>
-
-              {/* Key districts */}
-              <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 sm:p-7">
-                <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                  Spread the word to your network
-                </h2>
-                <p className="text-sm text-gray-500 mb-4">
-                  These are the districts most likely to tip the balance. If you know anyone who lives in one of these areas, forward them the call script &mdash; their call could be the one that gets us to 218.
-                </p>
-                <TargetedRepList targetedReps={targetedReps} />
+                <RepList
+                  allReps={allReps}
+                  signerData={signerData}
+                  geoData={geoData}
+                  onSearchOverlay={setNetworkSearchOverlay}
+                  callScriptTemplate={callScriptTemplate}
+                  emailTemplate={emailTemplate}
+                />
               </div>
 
               {/* Signature map */}
               <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 sm:p-7">
                 <h2 className="text-xl font-semibold text-gray-900 mb-1">Signature map</h2>
-                <p className="text-sm text-gray-500 mb-1">
+                <p className="text-sm text-gray-500 mb-4">
                   <span className="inline-block w-3 h-3 rounded-sm bg-green-500 mr-1 align-middle" /> Signed
                   <span className="inline-block w-3 h-3 rounded-sm bg-yellow-400 ml-3 mr-1 align-middle" /> Most likely to sign
                   <span className="inline-block w-3 h-3 rounded-sm bg-gray-300 ml-3 mr-1 align-middle" /> Not yet targeted
+                  {networkSearchOverlay && (
+                    <>
+                      <span className="inline-block w-3 h-3 rounded-sm border-2 border-blue-500 border-dashed ml-3 mr-1 align-middle" /> Searched area
+                    </>
+                  )}
                   &mdash; Click a district for details.
                 </p>
-                <p className="text-xs text-link mb-4">Don&rsquo;t know the zip code? Use the map to zoom in.</p>
                 <DistrictMap
                   signerData={signerData}
                   allReps={allReps}
                   selectedDistrictKey={networkSelectedDistrict?.key}
                   onDistrictClick={setNetworkSelectedDistrict}
+                  searchOverlay={networkSearchOverlay}
                 />
                 {networkSelectedDistrict && renderCallout(networkSelectedDistrict, () => setNetworkSelectedDistrict(null), networkCalloutRef)}
+              </div>
+
+              {/* High-priority targeted reps — collapsible */}
+              <div className="bg-white rounded-2xl shadow-md border border-gray-100">
+                <button
+                  onClick={() => setShowTargetedList(!showTargetedList)}
+                  className="w-full text-left p-5 sm:p-7 flex items-center justify-between gap-3"
+                >
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      High-priority representatives
+                    </h2>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {targetedReps.length} reps most likely to sign &mdash; browse by state
+                    </p>
+                  </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`h-6 w-6 text-gray-400 transition-transform shrink-0 ${showTargetedList ? 'rotate-180' : ''}`}
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {showTargetedList && (
+                  <div className="px-5 pb-5 sm:px-7 sm:pb-7 pt-0">
+                    <TargetedRepList targetedReps={targetedReps} callScriptTemplate={callScriptTemplate} emailTemplate={emailTemplate} />
+                  </div>
+                )}
               </div>
             </div>
           )}

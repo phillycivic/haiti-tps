@@ -1,32 +1,33 @@
 import { NextRequest } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = request.nextUrl;
-  const street = searchParams.get('street');
-  const city = searchParams.get('city');
-  const state = searchParams.get('state');
-  const zip = searchParams.get('zip');
+  const q = request.nextUrl.searchParams.get('q')?.trim();
 
-  if (!street || !zip) {
+  if (!q) {
     return Response.json(
-      { error: 'Street address and ZIP code are required' },
+      { error: 'Query parameter "q" is required' },
       { status: 400 }
     );
   }
 
   const params = new URLSearchParams({
-    street,
-    city: city || '',
-    state: state || '',
-    zip,
-    benchmark: 'Public_AR_Current',
+    q,
     format: 'json',
+    countrycodes: 'us',
+    limit: '1',
+    addressdetails: '1',
+    polygon_geojson: '1',
   });
 
-  const url = `https://geocoding.geo.census.gov/geocoder/locations/address?${params}`;
+  const url = `https://nominatim.openstreetmap.org/search?${params}`;
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'HaitiTPSAction/1.0 (civic advocacy tool)',
+      },
+    });
+
     if (!response.ok) {
       return Response.json(
         { error: 'Geocoding service error' },
@@ -35,20 +36,24 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
-    const matches = data?.result?.addressMatches;
 
-    if (!matches || matches.length === 0) {
+    if (!Array.isArray(data) || data.length === 0) {
       return Response.json(
-        { error: 'Address not found. Please check your address and try again.' },
+        { error: 'Location not found. Try a city name, ZIP code, or state.' },
         { status: 404 }
       );
     }
 
-    const match = matches[0];
+    const result = data[0];
+    const addr = result.address || {};
+
     return Response.json({
-      lat: match.coordinates.y,
-      lng: match.coordinates.x,
-      matchedAddress: match.matchedAddress,
+      lat: parseFloat(result.lat),
+      lng: parseFloat(result.lon),
+      displayName: result.display_name,
+      city: addr.city || addr.town || addr.village || addr.hamlet || addr.county || '',
+      state: addr.state || '',
+      geojson: result.geojson || null,
     });
   } catch {
     return Response.json(

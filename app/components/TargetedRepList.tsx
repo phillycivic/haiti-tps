@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useMemo, useState } from 'react';
 import TargetedRepCard from './TargetedRepCard';
 
 const ABBR_TO_STATE: Record<string, string> = {
@@ -22,26 +22,29 @@ interface TargetedRep {
 
 interface TargetedRepListProps {
   targetedReps: TargetedRep[];
+  callScriptTemplate?: string;
+  emailTemplate?: string;
 }
 
-export default function TargetedRepList({ targetedReps }: TargetedRepListProps) {
-  const [query, setQuery] = useState('');
+export default function TargetedRepList({ targetedReps, callScriptTemplate, emailTemplate }: TargetedRepListProps) {
+  const [selectedState, setSelectedState] = useState('');
   const [isAtTop, setIsAtTop] = useState(true);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const filtered = query.trim()
-    ? targetedReps.filter(rep => {
-        const q = query.toLowerCase();
-        const stateAbbr = rep.stateDistrict.slice(0, 2);
-        const stateName = (ABBR_TO_STATE[stateAbbr] || '').toLowerCase();
-        return (
-          rep.searchTerms.toLowerCase().includes(q) ||
-          rep.name.toLowerCase().includes(q) ||
-          rep.stateDistrict.toLowerCase().includes(q) ||
-          stateName.includes(q)
-        );
-      })
+  const states = useMemo(() => {
+    const seen = new Map<string, string>();
+    for (const rep of targetedReps) {
+      const abbr = rep.stateDistrict.slice(0, 2);
+      if (!seen.has(abbr)) {
+        seen.set(abbr, ABBR_TO_STATE[abbr] || abbr);
+      }
+    }
+    return [...seen.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+  }, [targetedReps]);
+
+  const filtered = selectedState
+    ? targetedReps.filter(rep => rep.stateDistrict.startsWith(selectedState))
     : targetedReps;
 
   const handleScroll = () => {
@@ -61,20 +64,25 @@ export default function TargetedRepList({ targetedReps }: TargetedRepListProps) 
 
   return (
     <div>
-      <label htmlFor="rep-search" className="block text-sm font-medium text-gray-700 mb-1">
-        Search by city, state, or name to find a rep in your network:
-      </label>
-      <input
-        id="rep-search"
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search by city, state, or rep name..."
-        className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-ring focus:border-ring text-gray-900 mb-4 shadow-sm"
-      />
+      <div className="flex items-center gap-3 mb-4">
+        <label htmlFor="state-filter" className="text-sm font-medium text-gray-700 shrink-0">
+          Filter by state:
+        </label>
+        <select
+          id="state-filter"
+          value={selectedState}
+          onChange={(e) => setSelectedState(e.target.value)}
+          className="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-ring focus:border-ring text-gray-900 text-sm shadow-sm bg-white"
+        >
+          <option value="">All states</option>
+          {states.map(([abbr, name]) => (
+            <option key={abbr} value={abbr}>{name}</option>
+          ))}
+        </select>
+      </div>
       {filtered.length === 0 ? (
         <p className="text-gray-500 text-sm text-center py-4">
-          No reps most likely to sign found for &ldquo;{query}&rdquo;
+          No high-priority reps in this state.
         </p>
       ) : (
         <div className="relative">
@@ -105,6 +113,10 @@ export default function TargetedRepList({ targetedReps }: TargetedRepListProps) 
                 area={rep.area}
                 stateDistrict={rep.stateDistrict}
                 phone={rep.phone}
+                targeted
+                callScriptTemplate={callScriptTemplate}
+                emailTemplate={emailTemplate}
+                emailOnly
               />
             ))}
           </div>
@@ -125,7 +137,7 @@ export default function TargetedRepList({ targetedReps }: TargetedRepListProps) 
         </div>
       )}
       <p className="text-xs text-gray-400 mt-3 text-center">
-        {filtered.length} of {targetedReps.length} representatives most likely to sign
+        {filtered.length} of {targetedReps.length} high-priority representatives
       </p>
     </div>
   );

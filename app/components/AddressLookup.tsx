@@ -2,8 +2,9 @@
 
 import { useState, useCallback } from 'react';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import booleanIntersects from '@turf/boolean-intersects';
 import { point } from '@turf/helpers';
-import type { FeatureCollection, Feature, MultiPolygon, Polygon } from 'geojson';
+import type { FeatureCollection, Feature, MultiPolygon, Polygon, GeoJsonProperties } from 'geojson';
 import { FIPS_TO_STATE } from './fips';
 import CallScript from './CallScript';
 
@@ -56,7 +57,7 @@ interface AddressLookupProps {
   emailTemplate?: string;
 }
 
-// Sample offsets (~2mi grid) to catch ZIPs that span multiple districts
+// Sample offsets (~2mi grid) to catch locations that span multiple districts
 const SAMPLE_OFFSETS = [
   [0, 0],
   [0.025, 0], [-0.025, 0], [0, 0.025], [0, -0.025],
@@ -65,10 +66,13 @@ const SAMPLE_OFFSETS = [
 ];
 
 export default function AddressLookup({ signerData, geoData, targetedReps, onLocationFound, onSwitchToNetwork, callScriptTemplate, emailTemplate }: AddressLookupProps) {
-  const [zip, setZip] = useState('');
+  const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [results, setResults] = useState<DistrictResult[]>([]);
+  const [displayName, setDisplayName] = useState('');
+  const [resolvedCity, setResolvedCity] = useState('');
+  const [resolvedState, setResolvedState] = useState('');
 
   const signerByDistrict = new Map(
     signerData.signers.map((s) => [s.stateDistrict, s])
@@ -78,7 +82,7 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
     (targetedReps || []).map((t) => [t.stateDistrict, t])
   );
 
-  const findDistrictsNear = useCallback(
+  const findDistrictsByPoint = useCallback(
     (lat: number, lng: number): DistrictResult[] => {
       if (!geoData) return [];
       const found = new Map<string, DistrictResult>();
@@ -100,8 +104,40 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
                 targeted: targetedByDistrict.get(key),
               });
             }
-            break; // this point matched, move to next offset
+            break;
           }
+        }
+      }
+
+      return Array.from(found.values());
+    },
+    [geoData, signerByDistrict, targetedByDistrict]
+  );
+
+  const findDistrictsByPolygon = useCallback(
+    (geojson: Feature<Polygon | MultiPolygon, GeoJsonProperties>): DistrictResult[] => {
+      if (!geoData) return [];
+      const found = new Map<string, DistrictResult>();
+
+      for (const feature of geoData.features) {
+        const f = feature as Feature<Polygon | MultiPolygon, DistrictProperties>;
+        try {
+          if (booleanIntersects(geojson, f)) {
+            const stateAbbr = FIPS_TO_STATE[f.properties.STATEFP] || f.properties.STATEFP;
+            const district = f.properties.CD118FP;
+            const key = `${stateAbbr}${district}`;
+            if (!found.has(key)) {
+              found.set(key, {
+                key,
+                stateAbbr,
+                district,
+                signer: signerByDistrict.get(key),
+                targeted: targetedByDistrict.get(key),
+              });
+            }
+          }
+        } catch {
+          // skip features that fail intersection check
         }
       }
 
@@ -115,27 +151,38 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
     setLoading(true);
     setError('');
     setResults([]);
+    setDisplayName('');
+    setResolvedCity('');
+    setResolvedState('');
 
     try {
-      const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
+      const res = await fetch(`/api/geocode?q=${encodeURIComponent(query.trim())}`);
       if (!res.ok) {
-        setError('ZIP code not found. Please check and try again.');
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || 'Location not found. Try a city name, ZIP code, or state.');
         return;
       }
+
       const data = await res.json();
-      const place = data.places?.[0];
-      if (!place) {
-        setError('ZIP code not found. Please check and try again.');
-        return;
+      setDisplayName(data.displayName);
+      setResolvedCity(data.city);
+      setResolvedState(data.state);
+      onLocationFound?.({ lat: data.lat, lng: data.lng });
+
+      let districts: DistrictResult[];
+      if (data.geojson && (data.geojson.type === 'Polygon' || data.geojson.type === 'MultiPolygon')) {
+        const geoFeature: Feature<Polygon | MultiPolygon, GeoJsonProperties> = {
+          type: 'Feature',
+          properties: {},
+          geometry: data.geojson,
+        };
+        districts = findDistrictsByPolygon(geoFeature);
+      } else {
+        districts = findDistrictsByPoint(data.lat, data.lng);
       }
 
-      const lat = parseFloat(place.latitude);
-      const lng = parseFloat(place.longitude);
-      onLocationFound?.({ lat, lng });
-
-      const districts = findDistrictsNear(lat, lng);
       if (districts.length === 0) {
-        setError('Could not determine congressional district for this ZIP code.');
+        setError('Could not determine congressional district for this location.');
         return;
       }
 
@@ -147,26 +194,26 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
     }
   };
 
+  const isZip = /^\d{5}$/.test(query.trim());
+
   return (
     <div className="w-full">
       <form onSubmit={handleSubmit} className="flex gap-3">
         <div className="flex-1">
-          <label htmlFor="zip" className="sr-only">ZIP Code</label>
+          <label htmlFor="location" className="sr-only">Location</label>
           <input
-            id="zip"
+            id="location"
             type="text"
-            inputMode="numeric"
-            value={zip}
-            onChange={(e) => setZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
-            placeholder="Enter your ZIP code"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="City, ZIP, or region (e.g. Tucson, 32801)"
             required
-            pattern="[0-9]{5}"
             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-ring focus:border-ring text-gray-900 text-lg shadow-sm"
           />
         </div>
         <button
           type="submit"
-          disabled={loading || !geoData || zip.length !== 5}
+          disabled={loading || !geoData || !query.trim()}
           className="bg-gradient-to-r from-action to-action-end hover:from-action-dark hover:to-action-end-dark disabled:from-gray-300 disabled:to-gray-300 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-sm hover:shadow-md shrink-0"
         >
           {loading ? 'Looking up...' : !geoData ? 'Loading...' : 'Find My Rep'}
@@ -179,11 +226,17 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
         </div>
       )}
 
+      {displayName && results.length > 0 && (
+        <p className="mt-3 text-sm text-gray-500">
+          Results for: <strong>{displayName}</strong>
+        </p>
+      )}
+
       {results.length > 0 && (
         <div className="mt-4 space-y-3">
           {results.length > 1 && (
             <p className="text-sm text-gray-500">
-              This ZIP code spans {results.length} congressional districts:
+              This location spans {results.length} congressional districts:
             </p>
           )}
           {results.map((r) => {
@@ -236,7 +289,9 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
                     </p>
                     <CallScript
                       repName={r.targeted?.name || `your representative (${r.stateAbbr}-${r.district})`}
-                      zip={zip}
+                      city={resolvedCity}
+                      state={resolvedState}
+                      zip={isZip ? query.trim() : undefined}
                       phone={r.targeted?.phone}
                       callScriptTemplate={callScriptTemplate}
                       emailTemplate={emailTemplate}

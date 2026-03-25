@@ -11,7 +11,7 @@ import AddressLookup from './AddressLookup';
 import RepList from './RepList';
 import TargetedRepList from './TargetedRepList';
 import TargetedRepCard from './TargetedRepCard';
-import CallScript from './CallScript';
+import FactSheet from './FactSheet';
 import { FIPS_TO_STATE } from './fips';
 import type { DistrictClickInfo } from './Map';
 
@@ -67,11 +67,11 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState<'you' | 'network' | 'learn'>(
-    tabParam === 'network' || tabParam === 'learn' ? tabParam : 'you'
+  const [activeTab, setActiveTab] = useState<'you' | 'network' | 'learn' | 'facts'>(
+    tabParam === 'network' || tabParam === 'learn' || tabParam === 'facts' ? tabParam : 'you'
   );
 
-  const switchTab = useCallback((tab: 'you' | 'network' | 'learn') => {
+  const switchTab = useCallback((tab: 'you' | 'network' | 'learn' | 'facts') => {
     setActiveTab(tab);
     setSelectedDistrict(null);
     setNetworkSelectedDistrict(null);
@@ -82,8 +82,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
     setShowZipSearch(false);
     router.replace(`?tab=${tab}`, { scroll: false });
   }, [router]);
-  const calloutRef = useRef<HTMLDivElement>(null);
-  const autoSelectedRef = useRef(false);
+
 
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
@@ -146,7 +145,6 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
   // Auto-select on map when geolocation resolves
   useEffect(() => {
     if (!autoDistrict || selectedDistrict) return;
-    autoSelectedRef.current = true;
     setSelectedDistrict({
       key: autoDistrict.key,
       stateAbbr: autoDistrict.stateAbbr,
@@ -156,67 +154,8 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
     });
   }, [autoDistrict]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    if (selectedDistrict && calloutRef.current && !autoSelectedRef.current) {
-      calloutRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-    autoSelectedRef.current = false;
-  }, [selectedDistrict]);
-
   const repName = autoDistrict?.signer?.name || autoDistrict?.targeted?.name;
   const repParty = autoDistrict?.signer?.party || autoDistrict?.targeted?.party;
-
-  // District callout for map clicks
-  const renderCallout = (district: DistrictClickInfo, onClose: () => void, ref: React.RefObject<HTMLDivElement | null>) => (
-    <div id="district-callout" ref={ref} className="mt-4 border border-gray-200 rounded-lg bg-white p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="font-semibold text-gray-900 text-lg">
-            {district.signer?.name || district.targeted?.name || `${district.stateAbbr}-${district.district}`}
-            {(district.signer?.party || district.targeted?.party) && (
-              <span className="text-gray-500 font-normal"> ({district.signer?.party || district.targeted?.party})</span>
-            )}
-          </h3>
-          <p className="text-sm text-gray-500">
-            {district.stateAbbr}-{district.district}
-            {district.targeted?.area && ` \u2014 ${district.targeted.area}`}
-          </p>
-          {district.signer && (
-            <p className="mt-1 text-sm font-semibold text-green-600">
-              Signed {district.signer.dateSigned}
-            </p>
-          )}
-          {!district.signer && district.targeted && (
-            <p className="mt-1 text-sm font-semibold text-amber-600">
-              Not yet signed &mdash; most likely to sign &mdash; call this rep!
-            </p>
-          )}
-          {!district.signer && !district.targeted && (
-            <p className="mt-1 text-sm font-semibold text-gray-500">
-              Not yet signed
-            </p>
-          )}
-        </div>
-        <button
-          onClick={onClose}
-          className="shrink-0 text-gray-400 hover:text-gray-600"
-          aria-label="Close"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
-        </button>
-      </div>
-      {!district.signer && (
-        <CallScript
-          repName={district.targeted?.name || `your representative (${district.stateAbbr}-${district.district})`}
-          phone={district.targeted?.phone}
-          callScriptTemplate={callScriptTemplate}
-          emailTemplate={emailTemplate}
-        />
-      )}
-    </div>
-  );
 
   return (
     <>
@@ -281,6 +220,16 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
               }`}
             >
               Learn About TPS
+            </button>
+            <button
+              onClick={() => switchTab('facts')}
+              className={`flex-1 py-3.5 px-4 text-sm font-bold transition-all border-l border-gray-200 ${
+                activeTab === 'facts'
+                  ? 'bg-gradient-to-r from-brand to-brand-mid text-white shadow-inner'
+                  : 'bg-white text-gray-600 hover:bg-brand-tint hover:text-brand'
+              }`}
+            >
+              Fact Sheet
             </button>
           </div>
 
@@ -373,7 +322,6 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                             selectedDistrictKey={selectedDistrict?.key}
                             onDistrictClick={setSelectedDistrict}
                           />
-                          {selectedDistrict && renderCallout(selectedDistrict, () => setSelectedDistrict(null), calloutRef)}
                         </div>
                       )}
                     </div>
@@ -396,7 +344,6 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                       selectedDistrictKey={selectedDistrict?.key}
                       onDistrictClick={setSelectedDistrict}
                     />
-                    {selectedDistrict && renderCallout(selectedDistrict, () => setSelectedDistrict(null), calloutRef)}
                   </div>
                 )}
               </div>
@@ -566,12 +513,14 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
               )}
             </div>
           )}
+          {/* -- FACT SHEET -- */}
+          {activeTab === 'facts' && <FactSheet />}
 
         </div>
       </main>
 
       {/* Spread the word */}
-      {activeTab !== 'network' && <div className="bg-gradient-to-r from-brand via-brand-mid to-brand-deep text-white">
+      {activeTab !== 'network' && activeTab !== 'facts' && <div className="bg-gradient-to-r from-brand via-brand-mid to-brand-deep text-white">
         <div className="max-w-5xl mx-auto px-4 py-10 sm:py-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
           <div>
             <p className="text-xl sm:text-2xl font-bold">Help us spread the word.</p>

@@ -23,18 +23,23 @@ export default function TargetedRepCard({ name, party, area, stateDistrict, phon
 
   const districtLabel = `${stateDistrict.slice(0, 2)}-${stateDistrict.slice(2)}`;
   const phoneDigits = phone.replace(/[^0-9]/g, '');
+  const unableToSign = /Delegate|Commissioner/i.test(stateDistrict);
 
-  const statusColor = signed
-    ? 'border-emerald-200 bg-emerald-50/50'
-    : targeted
-      ? 'border-amber-200 bg-amber-50/50'
-      : 'border-gray-200 bg-white';
+  const statusColor = unableToSign
+    ? 'border-gray-200 bg-gray-50/50'
+    : signed
+      ? 'border-emerald-200 bg-emerald-50/50'
+      : targeted
+        ? 'border-amber-200 bg-amber-50/50'
+        : 'border-gray-200 bg-white';
 
-  const statusBadge = signed
-    ? { label: 'Signed', className: 'bg-emerald-100 text-emerald-700' }
-    : targeted
-      ? { label: 'High Priority', className: 'bg-amber-100 text-amber-700' }
-      : null;
+  const statusBadge = unableToSign
+    ? { label: 'Unable to sign', className: 'bg-gray-100 text-gray-800' }
+    : signed
+      ? { label: 'Signed', className: 'bg-emerald-100 text-emerald-700' }
+      : targeted
+        ? { label: 'High Priority', className: 'bg-amber-100 text-amber-700' }
+        : null;
 
   // When emailOnly, render the email button inline (no expand/collapse)
   if (emailOnly) {
@@ -58,7 +63,7 @@ export default function TargetedRepCard({ name, party, area, stateDistrict, phon
               )}
             </div>
           </div>
-          {!signed && (
+          {!signed && !unableToSign && (
             <div className="shrink-0">
               {/* Mobile: mailto link */}
               <a
@@ -85,7 +90,7 @@ export default function TargetedRepCard({ name, party, area, stateDistrict, phon
             </div>
           )}
         </div>
-        {showEmailText && !signed && (
+        {showEmailText && !signed && !unableToSign && (
           <div className="px-4 pb-4">
             <CallScript repName={name} phone={phone} callScriptTemplate={callScriptTemplate} emailTemplate={emailTemplate} emailOnly />
           </div>
@@ -145,7 +150,11 @@ export default function TargetedRepCard({ name, party, area, stateDistrict, phon
           >
             {phone}
           </a>
-          {signed ? (
+          {unableToSign ? (
+            <p className="text-sm text-gray-500">
+              This member is a non-voting delegate and is unable to sign the discharge petition.
+            </p>
+          ) : signed ? (
             <p className="text-sm text-emerald-700 font-medium">
               This representative has already signed the discharge petition.
             </p>

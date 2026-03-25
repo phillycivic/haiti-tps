@@ -10,6 +10,7 @@ import ProgressBar from './ProgressBar';
 import AddressLookup from './AddressLookup';
 import RepList from './RepList';
 import TargetedRepList from './TargetedRepList';
+import TargetedRepCard from './TargetedRepCard';
 import CallScript from './CallScript';
 import { FIPS_TO_STATE } from './fips';
 import type { DistrictClickInfo } from './Map';
@@ -60,6 +61,9 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
   const [networkSelectedDistrict, setNetworkSelectedDistrict] = useState<DistrictClickInfo | null>(null);
   const [networkSearchOverlay, setNetworkSearchOverlay] = useState<GeoJSON.GeoJsonObject | null>(null);
   const [showTargetedList, setShowTargetedList] = useState(false);
+  const [showZipSearch, setShowZipSearch] = useState(false);
+  const [networkMapMode, setNetworkMapMode] = useState<null | 'results' | 'explore'>(null);
+  const [youMapMode, setYouMapMode] = useState<null | 'results' | 'explore'>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
@@ -71,10 +75,14 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
     setActiveTab(tab);
     setSelectedDistrict(null);
     setNetworkSelectedDistrict(null);
+    setNetworkMapMode(null);
+    setNetworkSearchOverlay(null);
+    setYouMapMode(null);
+    setUserLocation(null);
+    setShowZipSearch(false);
     router.replace(`?tab=${tab}`, { scroll: false });
   }, [router]);
   const calloutRef = useRef<HTMLDivElement>(null);
-  const networkCalloutRef = useRef<HTMLDivElement>(null);
   const autoSelectedRef = useRef(false);
 
   useEffect(() => {
@@ -130,6 +138,11 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
     };
   }, [browserLocation, geoData, findDistrict, signerByDistrict, repByDistrict]);
 
+  // Show map alongside results when autoDistrict resolves
+  useEffect(() => {
+    if (autoDistrict && youMapMode === null) setYouMapMode('results');
+  }, [autoDistrict]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Auto-select on map when geolocation resolves
   useEffect(() => {
     if (!autoDistrict || selectedDistrict) return;
@@ -149,12 +162,6 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
     }
     autoSelectedRef.current = false;
   }, [selectedDistrict]);
-
-  useEffect(() => {
-    if (networkSelectedDistrict && networkCalloutRef.current) {
-      networkCalloutRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  }, [networkSelectedDistrict]);
 
   const repName = autoDistrict?.signer?.name || autoDistrict?.targeted?.name;
   const repParty = autoDistrict?.signer?.party || autoDistrict?.targeted?.party;
@@ -280,90 +287,118 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
           {/* -- FOR YOU -- */}
           {activeTab === 'you' && (
             <div className="space-y-6">
+              <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+                {/* Tab bar */}
+                <div className="flex border-b border-gray-100">
+                  <button
+                    onClick={() => setYouMapMode(autoDistrict || userLocation ? 'results' : null)}
+                    className={`flex-1 py-3 px-4 text-sm font-semibold transition-all ${
+                      youMapMode !== 'explore'
+                        ? 'bg-white text-gray-900 border-b-2 border-brand -mb-px'
+                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Find my rep
+                  </button>
+                  <button
+                    onClick={() => setYouMapMode('explore')}
+                    className={`flex-1 py-3 px-4 text-sm font-semibold transition-all border-l border-gray-100 ${
+                      youMapMode === 'explore'
+                        ? 'bg-white text-gray-900 border-b-2 border-brand -mb-px'
+                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Explore map
+                  </button>
+                </div>
 
-              {/* Auto-detected district */}
-              {autoDistrict && (
-                <div className={`rounded-2xl shadow-md border p-5 sm:p-7 ${
-                  autoDistrict.signer ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-300'
-                }`}>
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-                    Your representative (based on your location)
-                  </p>
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-                    {repName || `${autoDistrict.stateAbbr}-${autoDistrict.district}`}
-                    {repParty && <span className="text-gray-500 font-normal text-lg"> ({repParty})</span>}
-                  </h2>
-                  <p className="text-sm text-gray-500 mt-0.5">
-                    {autoDistrict.stateAbbr}-{autoDistrict.district}
-                    {autoDistrict.targeted?.area && ` \u2014 ${autoDistrict.targeted.area}`}
-                  </p>
-                  {autoDistrict.signer ? (
-                    <>
-                      <p className="mt-2 text-emerald-700 font-semibold">
-                        Signed the petition on {autoDistrict.signer.dateSigned}
+                {/* Find my rep tab */}
+                {youMapMode !== 'explore' && (
+                  <div className="p-5 sm:p-7">
+                    {!autoDistrict && (
+                      <p className="text-sm text-gray-500 mb-4">
+                        Enter your ZIP code to find your rep and see if they&apos;ve signed.
                       </p>
-                      <div className="mt-4 bg-white/80 rounded-xl p-4 border border-emerald-200">
-                        <p className="text-sm text-gray-700 font-medium">
-                          Your rep already signed! Switch to the &ldquo;For Your Network&rdquo; tab to find friends whose reps haven&rsquo;t yet.
-                        </p>
-                        <button
-                          onClick={() => switchTab('network')}
-                          className="mt-3 inline-flex items-center gap-2 bg-gradient-to-r from-action to-action-end hover:from-action-dark hover:to-action-end-dark text-white font-semibold py-2.5 px-5 rounded-lg text-sm transition-all shadow-sm hover:shadow-md"
-                        >
-                          Help us spread the word &mdash; reach out to your network &rarr;
-                        </button>
+                    )}
+                    <div className={youMapMode === 'results' ? 'flex flex-col md:flex-row gap-5' : ''}>
+                      <div className={youMapMode === 'results' ? 'md:w-[60%] min-w-0' : ''}>
+                        {autoDistrict && !showZipSearch && (
+                          <div className="mb-3">
+                            <p className="text-xs text-gray-400 mb-2">Your representative (based on your location)</p>
+                            <TargetedRepCard
+                              name={repName || `${autoDistrict.stateAbbr}-${autoDistrict.district}`}
+                              party={repParty || ''}
+                              area={autoDistrict.targeted?.area || ''}
+                              stateDistrict={autoDistrict.key}
+                              phone={autoDistrict.targeted?.phone || ''}
+                              signed={!!autoDistrict.signer}
+                              dateSigned={autoDistrict.signer?.dateSigned}
+                              targeted={!!autoDistrict.targeted && !autoDistrict.signer}
+                              callScriptTemplate={callScriptTemplate}
+                              emailTemplate={emailTemplate}
+                            />
+                          </div>
+                        )}
+                        {autoDistrict && !showZipSearch ? (
+                          <button
+                            onClick={() => { setShowZipSearch(true); setSelectedDistrict(null); setYouMapMode(null); }}
+                            className="text-sm text-brand hover:underline"
+                          >
+                            Not your district? Search by ZIP &rarr;
+                          </button>
+                        ) : (
+                          <AddressLookup
+                            signerData={signerData}
+                            geoData={geoData}
+                            targetedReps={allReps}
+                            onLocationFound={(loc) => { setUserLocation(loc); setYouMapMode('results'); }}
+                            onSwitchToNetwork={() => switchTab('network')}
+                            callScriptTemplate={callScriptTemplate}
+                            emailTemplate={emailTemplate}
+                          />
+                        )}
                       </div>
-                    </>
-                  ) : (
-                    <>
-                      <p className="mt-2 text-orange-700 font-bold text-lg">
-                        Has NOT signed yet &mdash; your call matters!
-                      </p>
-                      <CallScript
-                        repName={autoDistrict.targeted?.name || `your representative (${autoDistrict.stateAbbr}-${autoDistrict.district})`}
-                        phone={autoDistrict.targeted?.phone}
-                        callScriptTemplate={callScriptTemplate}
-                        emailTemplate={emailTemplate}
-                      />
-                    </>
-                  )}
-                  <p className="mt-3 text-xs text-gray-400">
-                    Not your district? Search below.
-                  </p>
-                </div>
-              )}
+                      {youMapMode === 'results' && (
+                        <div className="md:w-[40%] md:sticky md:top-4 md:self-start">
+                          <div className="flex items-center gap-3 mb-2 text-xs text-gray-500">
+                            <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-green-500" /> Signed</span>
+                            <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-yellow-400" /> Likely to sign</span>
+                            <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-gray-300" /> Other</span>
+                          </div>
+                          <DistrictMap
+                            signerData={signerData}
+                            allReps={allReps}
+                            userLocation={userLocation || browserLocation}
+                            initialZoom={userLocation ? 9 : 7}
+                            selectedDistrictKey={selectedDistrict?.key}
+                            onDistrictClick={setSelectedDistrict}
+                          />
+                          {selectedDistrict && renderCallout(selectedDistrict, () => setSelectedDistrict(null), calloutRef)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
-              {/* ZIP lookup -- only show if we don't have a location */}
-              {!autoDistrict && (
-                <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 sm:p-7">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                    Look up your rep
-                  </h2>
-                  <p className="text-sm text-gray-500 mb-4">
-                    Enter a city, ZIP code, or region to find your congressional district and see if your rep has signed.
-                  </p>
-                  <AddressLookup signerData={signerData} geoData={geoData} targetedReps={allReps} onSwitchToNetwork={() => switchTab('network')} callScriptTemplate={callScriptTemplate} emailTemplate={emailTemplate} />
-                </div>
-              )}
-
-              {/* Signature map */}
-              <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 sm:p-7">
-                <h2 className="text-xl font-semibold text-gray-900 mb-1">Signature map</h2>
-                <p className="text-sm text-gray-500 mb-4">
-                  <span className="inline-block w-3 h-3 rounded-sm bg-green-500 mr-1 align-middle" /> Signed
-                  <span className="inline-block w-3 h-3 rounded-sm bg-yellow-400 ml-3 mr-1 align-middle" /> Most likely to sign
-                  <span className="inline-block w-3 h-3 rounded-sm bg-gray-300 ml-3 mr-1 align-middle" /> Not yet targeted
-                  &mdash; Click a district for details.
-                </p>
-                <DistrictMap
-                  signerData={signerData}
-                  allReps={allReps}
-                  userLocation={userLocation || browserLocation}
-                  initialZoom={browserLocation && !userLocation ? 7 : undefined}
-                  selectedDistrictKey={selectedDistrict?.key}
-                  onDistrictClick={setSelectedDistrict}
-                />
-                {selectedDistrict && renderCallout(selectedDistrict, () => setSelectedDistrict(null), calloutRef)}
+                {/* Explore map tab */}
+                {youMapMode === 'explore' && (
+                  <div className="p-5 sm:p-7">
+                    <div className="flex items-center gap-3 mb-3 text-xs text-gray-500">
+                      <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-green-500" /> Signed</span>
+                      <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-yellow-400" /> Most likely to sign</span>
+                      <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-gray-300" /> Not yet targeted</span>
+                    </div>
+                    <DistrictMap
+                      signerData={signerData}
+                      allReps={allReps}
+                      userLocation={userLocation || browserLocation}
+                      initialZoom={browserLocation && !userLocation ? 7 : undefined}
+                      selectedDistrictKey={selectedDistrict?.key}
+                      onDistrictClick={setSelectedDistrict}
+                    />
+                    {selectedDistrict && renderCallout(selectedDistrict, () => setSelectedDistrict(null), calloutRef)}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -372,46 +407,87 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
           {activeTab === 'network' && (
             <div className="space-y-6">
 
-              {/* Location search */}
-              <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 sm:p-7">
-                <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                  Find a rep in your network
-                </h2>
-                <p className="text-sm text-gray-500 mb-4">
-                  Search by city, state, ZIP, or region. If you know someone in one of these areas, forward them the call script &mdash; their call could be the one that gets us to 218.
-                </p>
-                <RepList
-                  allReps={allReps}
-                  signerData={signerData}
-                  geoData={geoData}
-                  onSearchOverlay={setNetworkSearchOverlay}
-                  callScriptTemplate={callScriptTemplate}
-                  emailTemplate={emailTemplate}
-                />
-              </div>
+              {/* Search / Explore map card */}
+              <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+                {/* Tab bar */}
+                <div className="flex border-b border-gray-100">
+                  <button
+                    onClick={() => setNetworkMapMode(networkMapMode === 'explore' ? null : networkMapMode)}
+                    className={`flex-1 py-3 px-4 text-sm font-semibold transition-all ${
+                      networkMapMode !== 'explore'
+                        ? 'bg-white text-gray-900 border-b-2 border-brand -mb-px'
+                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Search by location
+                  </button>
+                  <button
+                    onClick={() => setNetworkMapMode('explore')}
+                    className={`flex-1 py-3 px-4 text-sm font-semibold transition-all border-l border-gray-100 ${
+                      networkMapMode === 'explore'
+                        ? 'bg-white text-gray-900 border-b-2 border-brand -mb-px'
+                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Explore map
+                  </button>
+                </div>
 
-              {/* Signature map */}
-              <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 sm:p-7">
-                <h2 className="text-xl font-semibold text-gray-900 mb-1">Signature map</h2>
-                <p className="text-sm text-gray-500 mb-4">
-                  <span className="inline-block w-3 h-3 rounded-sm bg-green-500 mr-1 align-middle" /> Signed
-                  <span className="inline-block w-3 h-3 rounded-sm bg-yellow-400 ml-3 mr-1 align-middle" /> Most likely to sign
-                  <span className="inline-block w-3 h-3 rounded-sm bg-gray-300 ml-3 mr-1 align-middle" /> Not yet targeted
-                  {networkSearchOverlay && (
-                    <>
-                      <span className="inline-block w-3 h-3 rounded-sm border-2 border-blue-500 border-dashed ml-3 mr-1 align-middle" /> Searched area
-                    </>
-                  )}
-                  &mdash; Click a district for details.
-                </p>
-                <DistrictMap
-                  signerData={signerData}
-                  allReps={allReps}
-                  selectedDistrictKey={networkSelectedDistrict?.key}
-                  onDistrictClick={setNetworkSelectedDistrict}
-                  searchOverlay={networkSearchOverlay}
-                />
-                {networkSelectedDistrict && renderCallout(networkSelectedDistrict, () => setNetworkSelectedDistrict(null), networkCalloutRef)}
+                {/* Search tab */}
+                {networkMapMode !== 'explore' && (
+                  <div className="p-5 sm:p-7">
+                    <p className="text-sm text-gray-500 mb-4">
+                      Search by city, state, ZIP, or region to find reps and forward the email script.
+                    </p>
+                    <div className={`${networkMapMode === 'results' ? 'flex flex-col md:flex-row gap-5' : ''}`}>
+                      <div className={networkMapMode === 'results' ? 'md:w-[60%] min-w-0' : ''}>
+                        <RepList
+                          allReps={allReps}
+                          signerData={signerData}
+                          geoData={geoData}
+                          onSearchOverlay={setNetworkSearchOverlay}
+                          onResultsFound={() => setNetworkMapMode('results')}
+                          highlightedDistrict={networkSelectedDistrict?.key}
+                          callScriptTemplate={callScriptTemplate}
+                          emailTemplate={emailTemplate}
+                        />
+                      </div>
+                      {networkMapMode === 'results' && (
+                        <div className="md:w-[40%] md:sticky md:top-4 md:self-start">
+                          <div className="flex items-center gap-3 mb-2 text-xs text-gray-500">
+                            <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-green-500" /> Signed</span>
+                            <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-yellow-400" /> High priority</span>
+                            <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-gray-300" /> Other</span>
+                          </div>
+                          <DistrictMap
+                            signerData={signerData}
+                            allReps={allReps}
+                            onDistrictClick={setNetworkSelectedDistrict}
+                            searchOverlay={networkSearchOverlay}
+                            compact
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Explore map tab */}
+                {networkMapMode === 'explore' && (
+                  <div className="p-5 sm:p-7">
+                    <div className="flex items-center gap-3 mb-3 text-xs text-gray-500">
+                      <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-green-500" /> Signed</span>
+                      <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-yellow-400" /> High priority</span>
+                      <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-gray-300" /> Other</span>
+                    </div>
+                    <DistrictMap
+                      signerData={signerData}
+                      allReps={allReps}
+                      onDistrictClick={setNetworkSelectedDistrict}
+                      searchOverlay={networkSearchOverlay}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* High-priority targeted reps — collapsible */}
@@ -495,7 +571,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
       </main>
 
       {/* Spread the word */}
-      <div className="bg-gradient-to-r from-brand via-brand-mid to-brand-deep text-white">
+      {activeTab !== 'network' && <div className="bg-gradient-to-r from-brand via-brand-mid to-brand-deep text-white">
         <div className="max-w-5xl mx-auto px-4 py-10 sm:py-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
           <div>
             <p className="text-xl sm:text-2xl font-bold">Help us spread the word.</p>
@@ -508,7 +584,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
             Reach out to your network &rarr;
           </button>
         </div>
-      </div>
+      </div>}
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-6">

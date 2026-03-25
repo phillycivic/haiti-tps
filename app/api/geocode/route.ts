@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
     limit: '1',
     addressdetails: '1',
     polygon_geojson: '1',
+    polygon_threshold: '0.02',
   });
 
   const url = `https://nominatim.openstreetmap.org/search?${params}`;

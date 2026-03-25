@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState, useMemo } from 'react';
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import booleanIntersects from '@turf/boolean-intersects';
 import { point } from '@turf/helpers';
@@ -40,6 +40,8 @@ interface RepListProps {
   geoData: FeatureCollection | null;
   onLocationFound?: (location: { lat: number; lng: number }) => void;
   onSearchOverlay?: (geojson: GeoJSON.GeoJsonObject | null) => void;
+  onResultsFound?: () => void;
+  highlightedDistrict?: string | null;
   callScriptTemplate?: string;
   emailTemplate?: string;
 }
@@ -52,7 +54,7 @@ const SAMPLE_OFFSETS = [
   [0.05, 0], [-0.05, 0], [0, 0.05], [0, -0.05],
 ];
 
-export default function RepList({ allReps, signerData, geoData, onLocationFound, onSearchOverlay, callScriptTemplate, emailTemplate }: RepListProps) {
+export default function RepList({ allReps, signerData, geoData, onLocationFound, onSearchOverlay, onResultsFound, highlightedDistrict, callScriptTemplate, emailTemplate }: RepListProps) {
   const [query, setQuery] = useState('');
   const [geocodeLoading, setGeocodeLoading] = useState(false);
   const [geocodeError, setGeocodeError] = useState('');
@@ -170,6 +172,7 @@ export default function RepList({ allReps, signerData, geoData, onLocationFound,
       }
 
       setGeocodeMatchedDistricts(matched);
+      onResultsFound?.();
 
       // Send the geocoded boundary to the map overlay
       if (data.geojson) {
@@ -212,6 +215,12 @@ export default function RepList({ allReps, signerData, geoData, onLocationFound,
     setIsAtTop(scrollTop <= 10);
     setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 10);
   };
+
+  useEffect(() => {
+    if (!highlightedDistrict || !listRef.current) return;
+    const el = listRef.current.querySelector(`[data-district="${highlightedDistrict}"]`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [highlightedDistrict]);
 
   const scrollUp = () => {
     listRef.current?.scrollBy({ top: -200, behavior: 'smooth' });
@@ -295,25 +304,27 @@ export default function RepList({ allReps, signerData, geoData, onLocationFound,
           <div
             ref={listRef}
             onScroll={handleScroll}
-            className="space-y-2 max-h-[32rem] overflow-y-auto pr-1"
+            className="space-y-2 max-h-[32rem] overflow-y-auto px-1 py-0.5"
           >
             {displayReps.map(rep => {
               const signer = signerByDistrict.get(rep.stateDistrict);
+              const isHighlighted = rep.stateDistrict === highlightedDistrict;
               return (
-                <TargetedRepCard
-                  key={rep.stateDistrict}
-                  name={rep.name}
-                  party={rep.party}
-                  area={rep.area}
-                  stateDistrict={rep.stateDistrict}
-                  phone={rep.phone}
-                  signed={!!signer}
-                  dateSigned={signer?.dateSigned}
-                  targeted={rep.targeted}
-                  callScriptTemplate={callScriptTemplate}
-                  emailTemplate={emailTemplate}
-                  emailOnly
-                />
+                <div key={rep.stateDistrict} data-district={rep.stateDistrict} className={isHighlighted ? 'ring-2 ring-blue-400 rounded-xl' : ''}>
+                  <TargetedRepCard
+                    name={rep.name}
+                    party={rep.party}
+                    area={rep.area}
+                    stateDistrict={rep.stateDistrict}
+                    phone={rep.phone}
+                    signed={!!signer}
+                    dateSigned={signer?.dateSigned}
+                    targeted={rep.targeted}
+                    callScriptTemplate={callScriptTemplate}
+                    emailTemplate={emailTemplate}
+                    emailOnly
+                  />
+                </div>
               );
             })}
           </div>

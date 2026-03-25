@@ -79,10 +79,12 @@ interface MapProps {
   signerData: SignerData;
   allReps: TargetedRep[];
   userLocation?: { lat: number; lng: number } | null;
+  flyToLocation?: { lat: number; lng: number } | null;
   initialZoom?: number;
   selectedDistrictKey?: string | null;
   onDistrictClick?: (info: DistrictClickInfo) => void;
   searchOverlay?: GeoJSON.GeoJsonObject | null;
+  compact?: boolean;
 }
 
 function OpenDistrictPopup({ districtKey, layersRef }: { districtKey: string; layersRef: React.RefObject<globalThis.Map<string, Layer>> }) {
@@ -101,7 +103,7 @@ function OpenDistrictPopup({ districtKey, layersRef }: { districtKey: string; la
   return null;
 }
 
-export default function DistrictMap({ signerData, allReps, userLocation, initialZoom, selectedDistrictKey, onDistrictClick, searchOverlay }: MapProps) {
+export default function DistrictMap({ signerData, allReps, userLocation, flyToLocation, initialZoom, selectedDistrictKey, onDistrictClick, searchOverlay, compact }: MapProps) {
   const [geoData, setGeoData] = useState<FeatureCollection | null>(null);
   const layersRef = useRef<globalThis.Map<string, Layer>>(new globalThis.Map());
 
@@ -192,7 +194,7 @@ export default function DistrictMap({ signerData, allReps, userLocation, initial
 
   if (!geoData) {
     return (
-      <div className="w-full h-[300px] sm:h-[400px] md:h-[500px] bg-gray-100 rounded-lg flex items-center justify-center">
+      <div className={`w-full bg-gray-100 rounded-lg flex items-center justify-center ${compact ? 'h-[280px] sm:h-[350px]' : 'h-[300px] sm:h-[400px] md:h-[500px]'}`}>
         <p className="text-gray-500">Loading map...</p>
       </div>
     );
@@ -202,7 +204,7 @@ export default function DistrictMap({ signerData, allReps, userLocation, initial
     <MapContainer
       center={[39, -98]}
       zoom={4}
-      className="w-full h-[300px] sm:h-[400px] md:h-[500px] rounded-lg touch-manipulation"
+      className={`w-full rounded-lg touch-manipulation ${compact ? 'h-[280px] sm:h-[350px]' : 'h-[300px] sm:h-[400px] md:h-[500px]'}`}
       scrollWheelZoom={true}
       dragging={true}
       zoomControl={false}
@@ -242,6 +244,9 @@ export default function DistrictMap({ signerData, allReps, userLocation, initial
             <Popup>Your location</Popup>
           </Marker>
         </>
+      )}
+      {flyToLocation && !userLocation && (
+        <FlyToLocation lat={flyToLocation.lat} lng={flyToLocation.lng} zoom={initialZoom || 9} />
       )}
       {selectedDistrictKey && (
         <OpenDistrictPopup districtKey={selectedDistrictKey} layersRef={layersRef} />

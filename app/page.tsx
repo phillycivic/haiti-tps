@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import signerData from '../data/signers.json';
+import { fetchSignerData } from './lib/signers';
 import ClientPage from './components/ClientPage';
 
 interface HouseRep {
@@ -139,7 +139,8 @@ async function fetchDocTab(tab: string): Promise<string> {
 export default async function Home() {
   const allReps = loadHouseReps();
   const targetedReps = allReps.filter(r => r.targeted);
-  const [learnContent, callScriptTemplate, emailTemplate] = await Promise.all([
+  const [signerData, learnContent, callScriptTemplate, emailTemplate] = await Promise.all([
+    fetchSignerData(),
     fetchLearnContent(),
     fetchDocTab('t.rzwkn49ttbko'),
     fetchDocTab('t.s05b9d46sd46'),

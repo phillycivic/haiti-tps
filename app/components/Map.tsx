@@ -104,7 +104,7 @@ export default function DistrictMap({ signerData, allReps, userLocation, flyToLo
     const prev = prevSelectedKeyRef.current;
     if (prev && prev !== selectedDistrictKey) {
       const prevLayer = layersRef.current.get(prev);
-      if (prevLayer) prevLayer.setStyle({ weight: 1.5, color: '#374151' });
+      if (prevLayer) prevLayer.setStyle({ weight: 2, color: '#4b5563', opacity: 1, dashArray: '2 8' });
     }
     if (selectedDistrictKey) {
       const layer = layersRef.current.get(selectedDistrictKey);
@@ -142,10 +142,11 @@ export default function DistrictMap({ signerData, allReps, userLocation, flyToLo
     else if (targeted) fillColor = '#facc15'; // yellow — targeted
     return {
       fillColor,
-      weight: 1.5,
+      weight: 2,
       opacity: 1,
-      color: '#374151',
-      fillOpacity: 0.5,
+      color: '#4b5563',
+      dashArray: '2 8',
+      fillOpacity: 0.25,
     };
   };
 
@@ -232,10 +233,9 @@ export default function DistrictMap({ signerData, allReps, userLocation, flyToLo
             data={searchOverlay as FeatureCollection}
             style={() => ({
               fillColor: '#3b82f6',
-              fillOpacity: 0.12,
+              fillOpacity: 0.15,
               color: '#2563eb',
-              weight: 3,
-              dashArray: '8 5',
+              weight: 4,
               interactive: false,
             })}
             interactive={false}

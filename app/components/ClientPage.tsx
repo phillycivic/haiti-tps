@@ -177,11 +177,32 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
           <div className="mt-4">
             <button
               type="button"
-              onClick={() => {
-                const a = document.createElement('a');
-                a.href = '/api/instagram-image';
-                a.download = 'haiti-tps-update.png';
-                a.click();
+              onClick={async () => {
+                try {
+                  const res = await fetch('/api/instagram-image');
+                  const blob = await res.blob();
+                  const file = new File([blob], 'haiti-tps-update.png', { type: 'image/png' });
+                  if (navigator.canShare?.({ files: [file] })) {
+                    await navigator.share({
+                      files: [file],
+                      title: 'Haiti TPS Update',
+                      text: 'The clock is ticking. Visit haititps.org to take action.',
+                    });
+                  } else {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = 'haiti-tps-update.png';
+                    a.click();
+                    URL.revokeObjectURL(a.href);
+                  }
+                } catch (e) {
+                  if ((e as Error).name !== 'AbortError') {
+                    const a = document.createElement('a');
+                    a.href = '/api/instagram-image';
+                    a.download = 'haiti-tps-update.png';
+                    a.click();
+                  }
+                }
               }}
               className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
             >

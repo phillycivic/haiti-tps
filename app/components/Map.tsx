@@ -69,7 +69,7 @@ function FitOverlayBounds({ geojson }: { geojson: GeoJSON.GeoJsonObject }) {
     const layer = L.geoJSON(geojson);
     const bounds = layer.getBounds();
     if (bounds.isValid()) {
-      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12, duration: 1.5 });
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13, duration: 1.5 });
     }
   }, [map, geojson]);
   return null;

@@ -325,7 +325,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                             signerData={signerData}
                             allReps={allReps}
                             flyToLocation={userLocation ?? browserLocation}
-                            initialZoom={userLocation ? 9 : 7}
+                            initialZoom={userLocation ? 12 : 7}
                             searchOverlay={youSearchOverlay}
                             selectedDistrictKey={selectedDistrict?.key}
                             onDistrictClick={setSelectedDistrict}

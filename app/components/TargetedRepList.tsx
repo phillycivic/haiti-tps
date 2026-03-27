@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import TargetedRepCard from './TargetedRepCard';
 
 const ABBR_TO_STATE: Record<string, string> = {
@@ -28,9 +28,6 @@ interface TargetedRepListProps {
 
 export default function TargetedRepList({ targetedReps, callScriptTemplate, emailTemplate }: TargetedRepListProps) {
   const [selectedState, setSelectedState] = useState('');
-  const [isAtTop, setIsAtTop] = useState(true);
-  const [isAtBottom, setIsAtBottom] = useState(false);
-  const listRef = useRef<HTMLDivElement>(null);
 
   const states = useMemo(() => {
     const seen = new Map<string, string>();
@@ -46,21 +43,6 @@ export default function TargetedRepList({ targetedReps, callScriptTemplate, emai
   const filtered = selectedState
     ? targetedReps.filter(rep => rep.stateDistrict.startsWith(selectedState))
     : targetedReps;
-
-  const handleScroll = () => {
-    if (!listRef.current) return;
-    const { scrollTop, scrollHeight, clientHeight } = listRef.current;
-    setIsAtTop(scrollTop <= 10);
-    setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 10);
-  };
-
-  const scrollUp = () => {
-    listRef.current?.scrollBy({ top: -200, behavior: 'smooth' });
-  };
-
-  const scrollDown = () => {
-    listRef.current?.scrollBy({ top: 200, behavior: 'smooth' });
-  };
 
   return (
     <div>
@@ -85,55 +67,21 @@ export default function TargetedRepList({ targetedReps, callScriptTemplate, emai
           No high-priority reps in this state.
         </p>
       ) : (
-        <div className="relative">
-          {!isAtTop && filtered.length > 8 && (
-            <button
-              onClick={scrollUp}
-              className="absolute top-0 left-0 right-0 z-10 flex items-center justify-center py-2 bg-gradient-to-b from-white via-white/95 to-transparent cursor-pointer"
-              aria-label="Scroll up for more"
-            >
-              <span className="flex items-center gap-1 text-sm text-gray-500 font-medium animate-bounce">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-180" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-                More reps above
-              </span>
-            </button>
-          )}
-          <div
-            ref={listRef}
-            onScroll={handleScroll}
-            className="space-y-2 max-h-[28rem] overflow-y-auto pr-1"
-          >
-            {filtered.map(rep => (
-              <TargetedRepCard
-                key={rep.stateDistrict}
-                name={rep.name}
-                party={rep.party}
-                area={rep.area}
-                stateDistrict={rep.stateDistrict}
-                phone={rep.phone}
-                targeted
-                callScriptTemplate={callScriptTemplate}
-                emailTemplate={emailTemplate}
-                emailOnly
-              />
-            ))}
-          </div>
-          {!isAtBottom && filtered.length > 8 && (
-            <button
-              onClick={scrollDown}
-              className="absolute bottom-0 left-0 right-0 flex items-center justify-center py-2 bg-gradient-to-t from-white via-white/95 to-transparent cursor-pointer"
-              aria-label="Scroll for more"
-            >
-              <span className="flex items-center gap-1 text-sm text-gray-500 font-medium animate-bounce">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-                More reps below
-              </span>
-            </button>
-          )}
+        <div className="space-y-2">
+          {filtered.map(rep => (
+            <TargetedRepCard
+              key={rep.stateDistrict}
+              name={rep.name}
+              party={rep.party}
+              area={rep.area}
+              stateDistrict={rep.stateDistrict}
+              phone={rep.phone}
+              targeted
+              callScriptTemplate={callScriptTemplate}
+              emailTemplate={emailTemplate}
+              emailOnly
+            />
+          ))}
         </div>
       )}
       <p className="text-xs text-gray-400 mt-3 text-center">

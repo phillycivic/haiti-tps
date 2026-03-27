@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Marker, Popup, ZoomControl, useMap } from 'react-leaflet';
 import type { FeatureCollection, Feature, Geometry } from 'geojson';
-import type { Layer, PathOptions, Map as LeafletMap } from 'leaflet';
+import type { Layer, PathOptions } from 'leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { FIPS_TO_STATE } from './fips';
@@ -43,7 +43,7 @@ interface TargetedRep {
 function FlyToLocation({ lat, lng, zoom = 9 }: { lat: number; lng: number; zoom?: number }) {
   const map = useMap();
   useEffect(() => {
-    map.flyTo([lat, lng], zoom, { duration: 1.5 });
+    map.setView([lat, lng], zoom, { animate: true, duration: 0.5 });
   }, [map, lat, lng, zoom]);
   return null;
 }
@@ -85,33 +85,33 @@ interface MapProps {
   onDistrictClick?: (info: DistrictClickInfo) => void;
   searchOverlay?: GeoJSON.GeoJsonObject | null;
   compact?: boolean;
+  repCount?: number;
 }
 
-function OpenDistrictPopup({ districtKey, layersRef }: { districtKey: string; layersRef: React.RefObject<globalThis.Map<string, Layer>> }) {
-  const map = useMap();
-  useEffect(() => {
-    // Small delay to let FlyToLocation start first and GeoJSON layers to bindPopup
-    const timer = setTimeout(() => {
-      const layer = layersRef.current?.get(districtKey);
-      if (layer && 'openPopup' in layer) {
-        const geoLayer = layer as L.Layer & { getBounds?: () => L.LatLngBounds; openPopup: () => void };
-        geoLayer.openPopup();
-      }
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [districtKey, layersRef, map]);
-  return null;
-}
 
-export default function DistrictMap({ signerData, allReps, userLocation, flyToLocation, initialZoom, selectedDistrictKey, onDistrictClick, searchOverlay, compact }: MapProps) {
+export default function DistrictMap({ signerData, allReps, userLocation, flyToLocation, initialZoom, selectedDistrictKey, onDistrictClick, searchOverlay, compact, repCount }: MapProps) {
   const [geoData, setGeoData] = useState<FeatureCollection | null>(null);
-  const layersRef = useRef<globalThis.Map<string, Layer>>(new globalThis.Map());
+  const layersRef = useRef<globalThis.Map<string, L.Path>>(new globalThis.Map());
+  const prevSelectedKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
     fetch('/districts.geojson')
       .then((res) => res.json())
       .then((data) => setGeoData(data));
   }, []);
+
+  useEffect(() => {
+    const prev = prevSelectedKeyRef.current;
+    if (prev && prev !== selectedDistrictKey) {
+      const prevLayer = layersRef.current.get(prev);
+      if (prevLayer) prevLayer.setStyle({ weight: 1.5, color: '#374151' });
+    }
+    if (selectedDistrictKey) {
+      const layer = layersRef.current.get(selectedDistrictKey);
+      if (layer) layer.setStyle({ weight: 3, color: '#1d4ed8' });
+    }
+    prevSelectedKeyRef.current = selectedDistrictKey ?? null;
+  }, [selectedDistrictKey]);
 
   const signedDistricts = new Set(
     signerData.signers.map((s) => s.stateDistrict)
@@ -178,8 +178,8 @@ export default function DistrictMap({ signerData, allReps, userLocation, flyToLo
         </div>
       `;
     }
-    layer.bindPopup(popupContent);
-    layersRef.current.set(key, layer);
+    layer.bindPopup(popupContent, { autoPan: false });
+    layersRef.current.set(key, layer as L.Path);
 
     layer.on('click', () => {
       onDistrictClick?.({
@@ -192,9 +192,19 @@ export default function DistrictMap({ signerData, allReps, userLocation, flyToLo
     });
   };
 
+  const dynamicHeight = compact && repCount !== undefined
+    ? Math.max(200, Math.min(repCount * 120, 380))
+    : undefined;
+
+  const heightClass = compact ? 'h-[280px] sm:h-[350px]' : 'h-[300px] sm:h-[400px] md:h-[500px]';
+  const heightStyle = dynamicHeight ? { height: `${dynamicHeight}px` } : undefined;
+
   if (!geoData) {
     return (
-      <div className={`w-full bg-gray-100 rounded-lg flex items-center justify-center ${compact ? 'h-[280px] sm:h-[350px]' : 'h-[300px] sm:h-[400px] md:h-[500px]'}`}>
+      <div
+        className={`w-full bg-gray-100 rounded-lg flex items-center justify-center ${dynamicHeight ? '' : heightClass}`}
+        style={heightStyle}
+      >
         <p className="text-gray-500">Loading map...</p>
       </div>
     );
@@ -204,7 +214,8 @@ export default function DistrictMap({ signerData, allReps, userLocation, flyToLo
     <MapContainer
       center={[39, -98]}
       zoom={4}
-      className={`w-full rounded-lg touch-manipulation ${compact ? 'h-[280px] sm:h-[350px]' : 'h-[300px] sm:h-[400px] md:h-[500px]'}`}
+      className={`w-full rounded-lg touch-manipulation ${dynamicHeight ? '' : heightClass}`}
+      style={heightStyle}
       scrollWheelZoom={true}
       dragging={true}
       zoomControl={false}
@@ -245,12 +256,10 @@ export default function DistrictMap({ signerData, allReps, userLocation, flyToLo
           </Marker>
         </>
       )}
-      {flyToLocation && !userLocation && (
+      {flyToLocation && !userLocation && !searchOverlay && (
         <FlyToLocation lat={flyToLocation.lat} lng={flyToLocation.lng} zoom={initialZoom || 9} />
       )}
-      {selectedDistrictKey && (
-        <OpenDistrictPopup districtKey={selectedDistrictKey} layersRef={layersRef} />
-      )}
+
     </MapContainer>
   );
 }

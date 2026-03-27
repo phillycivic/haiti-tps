@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import booleanIntersects from '@turf/boolean-intersects';
 import { point } from '@turf/helpers';
@@ -51,8 +51,9 @@ interface AddressLookupProps {
   signerData: SignerData;
   geoData: FeatureCollection | null;
   targetedReps?: TargetedRep[];
-  onLocationFound?: (location: { lat: number; lng: number }) => void;
+  onLocationFound?: (location: { lat: number; lng: number; geojson?: object | null }) => void;
   onSwitchToNetwork?: () => void;
+  highlightedDistrict?: string | null;
   callScriptTemplate?: string;
   emailTemplate?: string;
 }
@@ -65,12 +66,19 @@ const SAMPLE_OFFSETS = [
   [0.05, 0], [-0.05, 0], [0, 0.05], [0, -0.05],
 ];
 
-export default function AddressLookup({ signerData, geoData, targetedReps, onLocationFound, onSwitchToNetwork, callScriptTemplate, emailTemplate }: AddressLookupProps) {
+export default function AddressLookup({ signerData, geoData, targetedReps, onLocationFound, onSwitchToNetwork, highlightedDistrict, callScriptTemplate, emailTemplate }: AddressLookupProps) {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [results, setResults] = useState<DistrictResult[]>([]);
   const [displayName, setDisplayName] = useState('');
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!highlightedDistrict || !listRef.current) return;
+    const el = listRef.current.querySelector(`[data-district="${highlightedDistrict}"]`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [highlightedDistrict]);
 
   const signerByDistrict = new Map(
     signerData.signers.map((s) => [s.stateDistrict, s])
@@ -166,7 +174,7 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
 
       const data = await res.json();
       setDisplayName(data.displayName);
-      onLocationFound?.({ lat: data.lat, lng: data.lng });
+      onLocationFound?.({ lat: data.lat, lng: data.lng, geojson: data.geojson ?? null });
 
       let districts: DistrictResult[];
       if (data.geojson && (data.geojson.type === 'Polygon' || data.geojson.type === 'MultiPolygon')) {
@@ -233,26 +241,27 @@ export default function AddressLookup({ signerData, geoData, targetedReps, onLoc
       )}
 
       {results.length > 0 && (
-        <div className="mt-4 space-y-2">
+        <div className="mt-4 space-y-2" ref={listRef}>
           {results.length > 1 && (
             <p className="text-sm text-gray-500 mb-1">
               This ZIP spans {results.length} congressional districts:
             </p>
           )}
           {results.map((r) => (
-            <TargetedRepCard
-              key={r.key}
-              name={r.signer?.name || r.targeted?.name || `${r.stateAbbr}-${r.district}`}
-              party={r.signer?.party || r.targeted?.party || ''}
-              area={r.targeted?.area || ''}
-              stateDistrict={r.key}
-              phone={r.targeted?.phone || ''}
-              signed={!!r.signer}
-              dateSigned={r.signer?.dateSigned}
-              targeted={!!r.targeted && !r.signer}
-              callScriptTemplate={callScriptTemplate}
-              emailTemplate={emailTemplate}
-            />
+            <div key={r.key} data-district={r.key} className={r.key === highlightedDistrict ? 'ring-2 ring-blue-400 rounded-xl' : ''}>
+              <TargetedRepCard
+                name={r.signer?.name || r.targeted?.name || `${r.stateAbbr}-${r.district}`}
+                party={r.signer?.party || r.targeted?.party || ''}
+                area={r.targeted?.area || ''}
+                stateDistrict={r.key}
+                phone={r.targeted?.phone || ''}
+                signed={!!r.signer}
+                dateSigned={r.signer?.dateSigned}
+                targeted={!!r.targeted && !r.signer}
+                callScriptTemplate={callScriptTemplate}
+                emailTemplate={emailTemplate}
+              />
+            </div>
           ))}
         </div>
       )}

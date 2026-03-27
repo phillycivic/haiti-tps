@@ -40,7 +40,7 @@ interface RepListProps {
   geoData: FeatureCollection | null;
   onLocationFound?: (location: { lat: number; lng: number }) => void;
   onSearchOverlay?: (geojson: GeoJSON.GeoJsonObject | null) => void;
-  onResultsFound?: () => void;
+  onResultsFound?: (count: number) => void;
   highlightedDistrict?: string | null;
   callScriptTemplate?: string;
   emailTemplate?: string;
@@ -172,7 +172,7 @@ export default function RepList({ allReps, signerData, geoData, onLocationFound,
       }
 
       setGeocodeMatchedDistricts(matched);
-      onResultsFound?.();
+      onResultsFound?.(allReps.filter(r => matched.has(r.stateDistrict)).length);
 
       // Send the geocoded boundary to the map overlay
       if (data.geojson) {

@@ -1,5 +1,21 @@
 import { NextRequest } from 'next/server';
 
+async function fetchZctaBoundary(zip: string): Promise<object | null> {
+  const params = new URLSearchParams({
+    where: `ZCTA5='${zip}'`,
+    outFields: 'ZCTA5',
+    returnGeometry: 'true',
+    f: 'geojson',
+  });
+  const url = `https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/1/query?${params}`;
+  const res = await fetch(url, { headers: { 'User-Agent': 'HaitiTPSAction/1.0' } });
+  if (!res.ok) return null;
+  const data = await res.json();
+  const feature = data?.features?.[0];
+  if (!feature?.geometry) return null;
+  return feature.geometry;
+}
+
 export async function GET(request: NextRequest) {
   const q = request.nextUrl.searchParams.get('q')?.trim();
 
@@ -9,6 +25,8 @@ export async function GET(request: NextRequest) {
       { status: 400 }
     );
   }
+
+  const isZip = /^\d{5}$/.test(q);
 
   const params = new URLSearchParams({
     q,
@@ -48,13 +66,21 @@ export async function GET(request: NextRequest) {
     const result = data[0];
     const addr = result.address || {};
 
+    let geojson = result.geojson || null;
+
+    // Replace Nominatim polygon with actual ZCTA boundary from Census for ZIP codes
+    if (isZip) {
+      const zcta = await fetchZctaBoundary(q);
+      if (zcta) geojson = zcta;
+    }
+
     return Response.json({
       lat: parseFloat(result.lat),
       lng: parseFloat(result.lon),
       displayName: result.display_name,
       city: addr.city || addr.town || addr.village || addr.hamlet || addr.county || '',
       state: addr.state || '',
-      geojson: result.geojson || null,
+      geojson,
     });
   } catch {
     return Response.json(

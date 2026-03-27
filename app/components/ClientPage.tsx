@@ -60,10 +60,13 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictClickInfo | null>(null);
   const [networkSelectedDistrict, setNetworkSelectedDistrict] = useState<DistrictClickInfo | null>(null);
   const [networkSearchOverlay, setNetworkSearchOverlay] = useState<GeoJSON.GeoJsonObject | null>(null);
-  const [showTargetedList, setShowTargetedList] = useState(false);
+  const [youSearchOverlay, setYouSearchOverlay] = useState<GeoJSON.GeoJsonObject | null>(null);
+  const [networkRepCount, setNetworkRepCount] = useState<number | undefined>(undefined);
+  const [showTargetedList, setShowTargetedList] = useState(true);
   const [showZipSearch, setShowZipSearch] = useState(false);
   const [networkMapMode, setNetworkMapMode] = useState<null | 'results' | 'explore'>(null);
   const [youMapMode, setYouMapMode] = useState<null | 'results' | 'explore'>(null);
+  const [youExploreEverShown, setYouExploreEverShown] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
@@ -77,6 +80,8 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
     setNetworkSelectedDistrict(null);
     setNetworkMapMode(null);
     setNetworkSearchOverlay(null);
+    setYouSearchOverlay(null);
+    setNetworkRepCount(undefined);
     setYouMapMode(null);
     setUserLocation(null);
     setShowZipSearch(false);
@@ -137,11 +142,6 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
     };
   }, [browserLocation, geoData, findDistrict, signerByDistrict, repByDistrict]);
 
-  // Show map alongside results when autoDistrict resolves
-  useEffect(() => {
-    if (autoDistrict && youMapMode === null) setYouMapMode('results');
-  }, [autoDistrict]); // eslint-disable-line react-hooks/exhaustive-deps
-
   // Auto-select on map when geolocation resolves
   useEffect(() => {
     if (!autoDistrict || selectedDistrict) return;
@@ -166,7 +166,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
             Call your representative today.
           </h1>
           <p className="mt-4 text-brand-light text-lg sm:text-xl max-w-2xl leading-relaxed">
-            350,000 Haitians are at risk of losing their protection. A discharge petition
+            330,000 Haitians are at risk of losing their protection. A discharge petition
             needs 218 House signatures — and your rep may not have signed yet.
             Find out below and make the call.
           </p>
@@ -250,7 +250,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                     Find my rep
                   </button>
                   <button
-                    onClick={() => setYouMapMode('explore')}
+                    onClick={() => { setYouMapMode('explore'); setYouExploreEverShown(true); }}
                     className={`flex-1 py-3 px-4 text-sm font-semibold transition-all border-l border-gray-100 ${
                       youMapMode === 'explore'
                         ? 'bg-white text-gray-900 border-b-2 border-brand -mb-px'
@@ -261,9 +261,8 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                   </button>
                 </div>
 
-                {/* Find my rep tab */}
-                {youMapMode !== 'explore' && (
-                  <div className="p-5 sm:p-7">
+                {/* Find my rep tab — always mounted to preserve AddressLookup state */}
+                <div className={`p-5 sm:p-7 ${youMapMode === 'explore' ? 'hidden' : ''}`}>
                     {!autoDistrict && (
                       <p className="text-sm text-gray-500 mb-4">
                         Enter your ZIP code to find your rep and see if they&apos;ve signed.
@@ -300,14 +299,22 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                             signerData={signerData}
                             geoData={geoData}
                             targetedReps={allReps}
-                            onLocationFound={(loc) => { setUserLocation(loc); setYouMapMode('results'); }}
+                            highlightedDistrict={selectedDistrict?.key}
+                            onLocationFound={(loc) => {
+                              setUserLocation(loc);
+                              setYouMapMode('results');
+                              if (loc.geojson) {
+                                setYouSearchOverlay({ type: 'Feature', properties: {}, geometry: loc.geojson } as GeoJSON.GeoJsonObject);
+                              }
+                            }}
                             onSwitchToNetwork={() => switchTab('network')}
                             callScriptTemplate={callScriptTemplate}
                             emailTemplate={emailTemplate}
                           />
                         )}
                       </div>
-                      {youMapMode === 'results' && (
+                      {/* Map: render once userLocation is set, keep mounted across tab switches */}
+                      {userLocation && (
                         <div className="md:w-[40%] md:sticky md:top-4 md:self-start">
                           <div className="flex items-center gap-3 mb-2 text-xs text-gray-500">
                             <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-green-500" /> Signed</span>
@@ -317,8 +324,9 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                           <DistrictMap
                             signerData={signerData}
                             allReps={allReps}
-                            userLocation={userLocation || browserLocation}
+                            flyToLocation={userLocation ?? browserLocation}
                             initialZoom={userLocation ? 9 : 7}
+                            searchOverlay={youSearchOverlay}
                             selectedDistrictKey={selectedDistrict?.key}
                             onDistrictClick={setSelectedDistrict}
                           />
@@ -326,11 +334,9 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                       )}
                     </div>
                   </div>
-                )}
 
-                {/* Explore map tab */}
-                {youMapMode === 'explore' && (
-                  <div className="p-5 sm:p-7">
+                {/* Explore map tab — lazy first render, then kept mounted to preserve Leaflet */}
+                {youExploreEverShown && <div className={`p-5 sm:p-7 ${youMapMode !== 'explore' ? 'hidden' : ''}`}>
                     <div className="flex items-center gap-3 mb-3 text-xs text-gray-500">
                       <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-green-500" /> Signed</span>
                       <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-yellow-400" /> Most likely to sign</span>
@@ -339,13 +345,10 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                     <DistrictMap
                       signerData={signerData}
                       allReps={allReps}
-                      userLocation={userLocation || browserLocation}
-                      initialZoom={browserLocation && !userLocation ? 7 : undefined}
                       selectedDistrictKey={selectedDistrict?.key}
                       onDistrictClick={setSelectedDistrict}
                     />
-                  </div>
-                )}
+                  </div>}
               </div>
             </div>
           )}
@@ -369,7 +372,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                     Search by location
                   </button>
                   <button
-                    onClick={() => setNetworkMapMode('explore')}
+                    onClick={() => { setNetworkMapMode('explore'); setNetworkSearchOverlay(null); }}
                     className={`flex-1 py-3 px-4 text-sm font-semibold transition-all border-l border-gray-100 ${
                       networkMapMode === 'explore'
                         ? 'bg-white text-gray-900 border-b-2 border-brand -mb-px'
@@ -393,7 +396,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                           signerData={signerData}
                           geoData={geoData}
                           onSearchOverlay={setNetworkSearchOverlay}
-                          onResultsFound={() => setNetworkMapMode('results')}
+                          onResultsFound={(count) => { setNetworkMapMode('results'); setNetworkRepCount(count); }}
                           highlightedDistrict={networkSelectedDistrict?.key}
                           callScriptTemplate={callScriptTemplate}
                           emailTemplate={emailTemplate}
@@ -410,8 +413,10 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                             signerData={signerData}
                             allReps={allReps}
                             onDistrictClick={setNetworkSelectedDistrict}
+                            selectedDistrictKey={networkSelectedDistrict?.key}
                             searchOverlay={networkSearchOverlay}
                             compact
+                            repCount={networkRepCount}
                           />
                         </div>
                       )}
@@ -431,7 +436,6 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                       signerData={signerData}
                       allReps={allReps}
                       onDistrictClick={setNetworkSelectedDistrict}
-                      searchOverlay={networkSearchOverlay}
                     />
                   </div>
                 )}
@@ -478,7 +482,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                   <div className="overflow-x-auto">
                   <div
                     className="
-                      text-sm text-gray-700 leading-relaxed
+                      text-sm text-black leading-relaxed
                       [&_h1]:text-xl [&_h1]:font-bold [&_h1]:text-gray-900 [&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:first:mt-0
                       [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-gray-900 [&_h2]:mt-5 [&_h2]:mb-2 [&_h2]:first:mt-0
                       [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-gray-800 [&_h3]:mt-4 [&_h3]:mb-1

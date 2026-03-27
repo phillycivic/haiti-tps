@@ -31,7 +31,7 @@ export default function ShareImageButton() {
           await navigator.share({
             files: [file],
             title: 'Haiti TPS Update',
-            text: 'The clock is ticking. Visit haititps.org to take action.',
+            text: 'The clock is ticking. Visit haitiTPS.org to take action.',
           });
         } else {
           downloadBlob(blob);

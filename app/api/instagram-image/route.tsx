@@ -204,7 +204,7 @@ export async function GET() {
                 VISIT{' '}
               </span>
               <span style={{ fontSize: 38, fontWeight: 900, color: '#1a3a6b', textDecoration: 'underline', marginTop: '4px', display: 'flex' }}>
-                WWW.haitiTPS.ORG
+                www.haitiTPS.org
               </span>
             </div>
 

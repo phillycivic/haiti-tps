@@ -40,6 +40,22 @@ interface TargetedRep {
   targeted?: boolean;
 }
 
+function InvalidateSize() {
+  const map = useMap();
+  useEffect(() => {
+    // Fix tiles not fully loading when container was hidden (display:none)
+    const container = map.getContainer();
+    const observer = new ResizeObserver(() => {
+      map.invalidateSize();
+    });
+    observer.observe(container);
+    // Also fire once after a short delay for initial mount
+    const t = setTimeout(() => map.invalidateSize(), 150);
+    return () => { observer.disconnect(); clearTimeout(t); };
+  }, [map]);
+  return null;
+}
+
 function FlyToLocation({ lat, lng, zoom = 9 }: { lat: number; lng: number; zoom?: number }) {
   const map = useMap();
   useEffect(() => {
@@ -86,10 +102,11 @@ interface MapProps {
   searchOverlay?: GeoJSON.GeoJsonObject | null;
   compact?: boolean;
   repCount?: number;
+  thinBorders?: boolean;
 }
 
 
-export default function DistrictMap({ signerData, allReps, userLocation, flyToLocation, initialZoom, selectedDistrictKey, onDistrictClick, searchOverlay, compact, repCount }: MapProps) {
+export default function DistrictMap({ signerData, allReps, userLocation, flyToLocation, initialZoom, selectedDistrictKey, onDistrictClick, searchOverlay, compact, repCount, thinBorders }: MapProps) {
   const [geoData, setGeoData] = useState<FeatureCollection | null>(null);
   const layersRef = useRef<globalThis.Map<string, L.Path>>(new globalThis.Map());
   const prevSelectedKeyRef = useRef<string | null>(null);
@@ -104,7 +121,7 @@ export default function DistrictMap({ signerData, allReps, userLocation, flyToLo
     const prev = prevSelectedKeyRef.current;
     if (prev && prev !== selectedDistrictKey) {
       const prevLayer = layersRef.current.get(prev);
-      if (prevLayer) prevLayer.setStyle({ weight: 2, color: '#4b5563', opacity: 1, dashArray: '2 8' });
+      if (prevLayer) prevLayer.setStyle({ weight: thinBorders ? 1 : 2, color: '#4b5563', opacity: 1, dashArray: '2 8' });
     }
     if (selectedDistrictKey) {
       const layer = layersRef.current.get(selectedDistrictKey);
@@ -142,7 +159,7 @@ export default function DistrictMap({ signerData, allReps, userLocation, flyToLo
     else if (targeted) fillColor = '#facc15'; // yellow — targeted
     return {
       fillColor,
-      weight: 2,
+      weight: thinBorders ? 1 : 2,
       opacity: 1,
       color: '#4b5563',
       dashArray: '2 8',
@@ -221,6 +238,7 @@ export default function DistrictMap({ signerData, allReps, userLocation, flyToLo
       dragging={true}
       zoomControl={false}
     >
+      <InvalidateSize />
       <ZoomControl position="topright" />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

@@ -67,6 +67,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
   const [networkMapMode, setNetworkMapMode] = useState<null | 'results' | 'explore'>(null);
   const [youMapMode, setYouMapMode] = useState<null | 'results' | 'explore'>(null);
   const [youExploreEverShown, setYouExploreEverShown] = useState(false);
+  const [networkExploreEverShown, setNetworkExploreEverShown] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
@@ -253,8 +254,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
           </div>
 
           {/* -- FOR YOU -- */}
-          {activeTab === 'you' && (
-            <div className="space-y-6">
+          <div className={`space-y-6 ${activeTab !== 'you' ? 'hidden' : ''}`}>
               <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
                 {/* Tab bar */}
                 <div className="flex border-b border-gray-100">
@@ -287,8 +287,8 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                         Enter your ZIP code to find your rep and see if they&apos;ve signed.
                       </p>
                     )}
-                    <div className={youMapMode === 'results' ? 'flex flex-col md:flex-row gap-5' : ''}>
-                      <div className={youMapMode === 'results' ? 'md:w-[60%] min-w-0' : ''}>
+                    <div>
+                      <div>
                         {autoDistrict && !showZipSearch && (
                           <div className="mb-3">
                             <p className="text-xs text-gray-400 mb-2">Your representative (based on your location)</p>
@@ -332,25 +332,6 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                           />
                         )}
                       </div>
-                      {/* Map: render once userLocation is set, keep mounted across tab switches */}
-                      {userLocation && (
-                        <div className="md:w-[40%] md:sticky md:top-4 md:self-start">
-                          <div className="flex items-center gap-3 mb-2 text-xs text-gray-500">
-                            <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-green-500" /> Signed</span>
-                            <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-yellow-400" /> Likely to sign</span>
-                            <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-gray-300" /> Other</span>
-                          </div>
-                          <DistrictMap
-                            signerData={signerData}
-                            allReps={allReps}
-                            flyToLocation={userLocation ?? browserLocation}
-                            initialZoom={userLocation ? 12 : 7}
-                            searchOverlay={youSearchOverlay}
-                            selectedDistrictKey={selectedDistrict?.key}
-                            onDistrictClick={setSelectedDistrict}
-                          />
-                        </div>
-                      )}
                     </div>
                   </div>
 
@@ -366,15 +347,14 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                       allReps={allReps}
                       selectedDistrictKey={selectedDistrict?.key}
                       onDistrictClick={setSelectedDistrict}
+                      thinBorders
                     />
                   </div>}
               </div>
-            </div>
-          )}
+          </div>
 
           {/* -- FOR YOUR NETWORK -- */}
-          {activeTab === 'network' && (
-            <div className="space-y-6">
+          <div className={`space-y-6 ${activeTab !== 'network' ? 'hidden' : ''}`}>
 
               {/* Search / Explore map card */}
               <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
@@ -391,7 +371,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                     Search by location
                   </button>
                   <button
-                    onClick={() => { setNetworkMapMode('explore'); setNetworkSearchOverlay(null); }}
+                    onClick={() => { setNetworkMapMode('explore'); setNetworkExploreEverShown(true); setNetworkSearchOverlay(null); }}
                     className={`flex-1 py-3 px-4 text-sm font-semibold transition-all border-l border-gray-100 ${
                       networkMapMode === 'explore'
                         ? 'bg-white text-gray-900 border-b-2 border-brand -mb-px'
@@ -443,9 +423,8 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                   </div>
                 )}
 
-                {/* Explore map tab */}
-                {networkMapMode === 'explore' && (
-                  <div className="p-5 sm:p-7">
+                {/* Explore map tab — lazy first render, then kept mounted to preserve Leaflet */}
+                {networkExploreEverShown && <div className={`p-5 sm:p-7 ${networkMapMode !== 'explore' ? 'hidden' : ''}`}>
                     <div className="flex items-center gap-3 mb-3 text-xs text-gray-500">
                       <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-green-500" /> Signed</span>
                       <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-yellow-400" /> High priority</span>
@@ -455,9 +434,9 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                       signerData={signerData}
                       allReps={allReps}
                       onDistrictClick={setNetworkSelectedDistrict}
+                      thinBorders
                     />
-                  </div>
-                )}
+                </div>}
               </div>
 
               {/* High-priority targeted reps — collapsible */}
@@ -489,8 +468,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                   </div>
                 )}
               </div>
-            </div>
-          )}
+          </div>
           {/* -- LEARN ABOUT TPS -- */}
           {activeTab === 'learn' && (
             <div className="space-y-6 pb-6 sm:pb-8">

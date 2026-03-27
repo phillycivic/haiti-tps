@@ -173,6 +173,25 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
           <div className="mt-6">
             <ProgressBar current={signerData.totalSignatures} needed={signerData.needed} />
           </div>
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = '/api/instagram-image';
+                a.download = 'haiti-tps-update.png';
+                a.click();
+              }}
+              className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                <rect x="2" y="2" width="20" height="20" rx="5" />
+                <circle cx="12" cy="12" r="5" />
+                <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
+              </svg>
+              Share on Instagram
+            </button>
+          </div>
         </div>
       </header>
 

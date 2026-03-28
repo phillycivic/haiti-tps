@@ -64,6 +64,7 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
   const [youSearchOverlay, setYouSearchOverlay] = useState<GeoJSON.GeoJsonObject | null>(null);
   const [networkRepCount, setNetworkRepCount] = useState<number | undefined>(undefined);
   const [showTargetedList, setShowTargetedList] = useState(true);
+  const [showMilestoneModal, setShowMilestoneModal] = useState(true);
   const [showZipSearch, setShowZipSearch] = useState(false);
   const [networkMapMode, setNetworkMapMode] = useState<null | 'results' | 'explore'>(null);
   const [youMapMode, setYouMapMode] = useState<null | 'results' | 'explore'>(null);
@@ -161,6 +162,65 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
 
   return (
     <>
+      {/* 218 Signatures Celebration Modal */}
+      {showMilestoneModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowMilestoneModal(false)}>
+          <div
+            className="relative bg-[#0c1a30] rounded-2xl max-w-md w-full overflow-hidden shadow-2xl text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Gold top accent */}
+            <div className="h-2 bg-gradient-to-r from-[#f5a623] via-[#e8c200] to-[#f5a623]" />
+
+            {/* Close button */}
+            <button
+              onClick={() => setShowMilestoneModal(false)}
+              className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
+              aria-label="Close"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div className="px-6 pt-8 pb-6">
+              {/* Headline */}
+              <div className="bg-[#f5a623] text-[#0c1a30] font-black text-3xl sm:text-4xl py-3 px-6 rounded-xl inline-block mb-5 tracking-tight">
+                WE DID IT!
+              </div>
+
+              {/* Number badge */}
+              <div className="mx-auto w-32 h-32 rounded-full border-4 border-green-500 bg-green-900/50 flex flex-col items-center justify-center mb-5">
+                <span className="text-[#f5a623] font-black text-4xl leading-none">218</span>
+                <span className="text-white text-xs font-bold tracking-widest uppercase mt-1">Signatures</span>
+              </div>
+
+              <p className="text-[#f5a623] font-bold text-lg tracking-wide uppercase mb-4">Goal Reached</p>
+
+              <p className="text-white/80 text-sm leading-relaxed mb-5">
+                To everyone who made a call, shared a post, or reached out to their network: you did this. Your voice is the reason 330,000 Haitians have a chance.
+              </p>
+
+              <div className="bg-white/10 rounded-xl px-5 py-4 mb-5">
+                <p className="text-white font-bold text-sm leading-relaxed">
+                  The fight is not over. The vote must still happen. Stay engaged.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setShowMilestoneModal(false)}
+                className="bg-[#f5a623] hover:bg-[#e8c200] text-[#0c1a30] font-bold py-3 px-8 rounded-xl transition-colors text-sm"
+              >
+                Continue to the site
+              </button>
+            </div>
+
+            {/* Gold bottom accent */}
+            <div className="h-2 bg-gradient-to-r from-[#f5a623] via-[#e8c200] to-[#f5a623]" />
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="bg-gradient-to-br from-brand via-brand-mid to-brand-deep text-white">
         <div className="max-w-5xl mx-auto px-4 py-10 sm:py-14">

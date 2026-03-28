@@ -21,7 +21,7 @@ export default function ShareImageButton() {
   const handleShare = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/instagram-image');
+      const res = await fetch('/instagram-image-218.png');
       if (!res.ok) throw new Error('Image generation failed');
       const blob = await res.blob();
 
@@ -42,7 +42,7 @@ export default function ShareImageButton() {
     } catch (e) {
       if ((e as Error).name !== 'AbortError') {
         const a = document.createElement('a');
-        a.href = '/api/instagram-image';
+        a.href = '/instagram-image-218.png';
         a.download = 'haiti-tps-update.png';
         document.body.appendChild(a);
         a.click();

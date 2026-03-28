@@ -93,11 +93,12 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
 
 
   useEffect(() => {
+    if (showMilestoneModal) return;
     navigator.geolocation?.getCurrentPosition(
       (pos) => setBrowserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       () => {} // silently ignore denial
     );
-  }, []);
+  }, [showMilestoneModal]);
 
   useEffect(() => {
     fetch('/districts.geojson')

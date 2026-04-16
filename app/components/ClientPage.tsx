@@ -167,47 +167,25 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
       {showMilestoneModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowMilestoneModal(false)}>
           <div
-            className="relative bg-[#0c1a30] rounded-2xl max-w-md w-full overflow-hidden shadow-2xl text-center"
+            className="relative max-w-md w-full"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Gold top accent */}
-            <div className="h-2 bg-gradient-to-r from-[#f5a623] via-[#e8c200] to-[#f5a623]" />
-
-            {/* Close button */}
             <button
               onClick={() => setShowMilestoneModal(false)}
-              className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
+              className="absolute top-2 right-2 z-10 text-white/70 hover:text-white bg-black/40 rounded-full p-1 transition-colors"
               aria-label="Close"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-
-            <div className="px-6 pt-8 pb-6">
-              {/* Headline */}
-              <div className="bg-[#f5a623] text-[#0c1a30] font-black text-3xl sm:text-4xl py-3 px-6 rounded-xl inline-block mb-5 tracking-tight">
-                WE DID IT!
-              </div>
-
-              {/* Number badge */}
-              <div className="mx-auto w-32 h-32 rounded-full border-4 border-green-500 bg-green-900/50 flex flex-col items-center justify-center mb-5">
-                <span className="text-[#f5a623] font-black text-4xl leading-none">218</span>
-                <span className="text-white text-xs font-bold tracking-widest uppercase mt-1">Signatures</span>
-              </div>
-
-              <p className="text-[#f5a623] font-bold text-lg tracking-wide uppercase mb-4">Goal Reached</p>
-
-              <p className="text-white/80 text-sm leading-relaxed mb-5">
-                To everyone who made a call, shared a post, or reached out to their network: you did this. Your voice is the reason 330,000 Haitians have a chance.
-              </p>
-
-              <div className="bg-white/10 rounded-xl px-5 py-4 mb-5">
-                <p className="text-white font-bold text-sm leading-relaxed">
-                  The fight is not over. The vote must still happen. Stay engaged.
-                </p>
-              </div>
-
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/IMG_20260416_174817.png"
+              alt="TPS Victory"
+              className="w-full rounded-t-2xl shadow-2xl"
+            />
+            <div className="bg-[#0c1a30] rounded-b-2xl px-6 py-4 text-center">
               <button
                 onClick={() => setShowMilestoneModal(false)}
                 className="bg-[#f5a623] hover:bg-[#e8c200] text-[#0c1a30] font-bold py-3 px-8 rounded-xl transition-colors text-sm"
@@ -215,9 +193,6 @@ export default function ClientPage({ signerData, allReps, targetedReps, learnCon
                 Continue to the site
               </button>
             </div>
-
-            {/* Gold bottom accent */}
-            <div className="h-2 bg-gradient-to-r from-[#f5a623] via-[#e8c200] to-[#f5a623]" />
           </div>
         </div>
       )}
